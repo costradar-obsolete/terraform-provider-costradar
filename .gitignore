@@ -1,0 +1,10 @@
+.DS_Store
+.idea
+vendor
+build
+release
+examples/.terraform
+examples/terraform.tfstate*
+examples/crash.log
+.terraform
+.terraform*
