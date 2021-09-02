@@ -10,21 +10,21 @@ import (
 	"net/http"
 )
 
-type CostAndUsageReportSubscription struct {
-	ID               string                         `json:"id"`
-	ReportName       string                         `json:"reportName"`
-	BucketName       string                         `json:"bucketName"`
-	BucketRegion     string                         `json:"bucketRegion"`
-	BucketPathPrefix string                         `json:"bucketPathPrefix"`
-	TimeUnit         string                         `json:"timeUnit"`
-	AccessConfig     CostAndUsageReportAccessConfig `json:"accessConfig"`
-}
-
-type CostAndUsageReportAccessConfig struct {
+type AccessConfig struct {
 	ReaderMode            string `json:"readerMode"`
 	AssumeRoleArn         string `json:"assumeRoleArn"`
 	AssumeRoleExternalId  string `json:"assumeRoleExternalId"`
 	AssumeRoleSessionName string `json:"assumeRoleSessionName"`
+}
+
+type CostAndUsageReportSubscription struct {
+	ID               string       `json:"id"`
+	ReportName       string       `json:"reportName"`
+	BucketName       string       `json:"bucketName"`
+	BucketRegion     string       `json:"bucketRegion"`
+	BucketPathPrefix string       `json:"bucketPathPrefix"`
+	TimeUnit         string       `json:"timeUnit"`
+	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
 type CostAndUsageReportPayload struct {
@@ -37,20 +37,20 @@ type Client interface {
 	GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportPayload, error)
 	CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error)
 	UpdateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error)
-	DestroyCostAndUsageReportSubscription(id string) error
+	DeleteCostAndUsageReportSubscription(id string) error
 }
 
 type ClientGraphqlClient struct {
-	graphqlEndpoint string
-	accessToken     string
-	httpClient      *http.Client
+	endpoint   string
+	token      string
+	httpClient *http.Client
 }
 
-func NewCostRadarClient(graphqlEndpoint, accessToken string) Client {
+func NewCostRadarClient(endpoint, token string) Client {
 	return &ClientGraphqlClient{
-		graphqlEndpoint: graphqlEndpoint,
-		accessToken:     accessToken,
-		httpClient:      &http.Client{},
+		endpoint:   endpoint,
+		token:      token,
+		httpClient: &http.Client{},
 	}
 }
 
@@ -63,9 +63,9 @@ func (c *ClientGraphqlClient) graphql(query string, variables map[string]interfa
 		"variables": variables,
 	})
 
-	req, _ := http.NewRequest("POST", c.graphqlEndpoint, payload)
+	req, _ := http.NewRequest("POST", c.endpoint, payload)
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("token %s", c.accessToken))
+	req.Header.Add("Authorization", fmt.Sprintf("token %s", c.token))
 	resp, err := c.httpClient.Do(req)
 
 	if err != nil {
@@ -140,7 +140,7 @@ func (c *ClientGraphqlClient) UpdateCostAndUsageReportSubscription(subscription 
 	return &payload, err
 }
 
-func (c *ClientGraphqlClient) DestroyCostAndUsageReportSubscription(id string) error {
+func (c *ClientGraphqlClient) DeleteCostAndUsageReportSubscription(id string) error {
 	var query = DestroyCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
 		"id": id,

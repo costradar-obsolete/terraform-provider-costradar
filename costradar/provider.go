@@ -16,14 +16,14 @@ func Provider() *schema.Provider {
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("COSTRADAR_TOKEN", nil),
 			},
-			"host": {
+			"endpoint": {
 				Type:        schema.TypeString,
 				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("COSTRADAR_HOST", nil),
+				DefaultFunc: schema.EnvDefaultFunc("COSTRADAR_ENDPOINT", nil),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"costradar_cur_subscription": resourceSubscription(),
+			"costradar_cur_subscription": resourceCurSubscription(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,
@@ -32,7 +32,7 @@ func Provider() *schema.Provider {
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	token := d.Get("token").(string)
-	host := d.Get("host").(string)
+	endpoint := d.Get("endpoint").(string)
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -43,5 +43,5 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		Detail:   "This is the detailed warning message from providerConfigure",
 	})
 
-	return NewCostRadarClient(host, token), diags
+	return NewCostRadarClient(endpoint, token), diags
 }

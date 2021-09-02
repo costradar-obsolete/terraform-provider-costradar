@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var resourceSubscriptionSchema = map[string]*schema.Schema{
+var resourceCurSubscriptionSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,
@@ -59,21 +59,21 @@ var resourceSubscriptionSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceSubscription() *schema.Resource {
+func resourceCurSubscription() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceSubscriptionCreate,
-		ReadContext:   resourceSubscriptionRead,
-		UpdateContext: resourceSubscriptionUpdate,
-		DeleteContext: resourceSubscriptionDelete,
+		CreateContext: resourceCurSubscriptionCreate,
+		ReadContext:   resourceCurSubscriptionRead,
+		UpdateContext: resourceCurSubscriptionUpdate,
+		DeleteContext: resourceCurSubscriptionDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema: resourceSubscriptionSchema,
+		Schema: resourceCurSubscriptionSchema,
 	}
 }
 
-func subscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportSubscription {
-	var accessConfig CostAndUsageReportAccessConfig
+func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportSubscription {
+	var accessConfig AccessConfig
 	accessConfigData := d.Get("access_config").([]interface{})[0].(map[string]interface{})
 	if v, ok := accessConfigData["reader_mode"].(string); ok {
 		accessConfig.ReaderMode = v
@@ -100,7 +100,7 @@ func subscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportSubs
 	return subscription
 }
 
-func subscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportSubscription) {
+func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportSubscription) {
 	//d.SetId(s.ID)
 	d.Set("report_name", s.ReportName)
 	d.Set("bucket_name", s.BucketName)
@@ -113,24 +113,24 @@ func subscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportSubs
 	d.Set("assume_role_session_name", s.AccessConfig.AssumeRoleSessionName)
 }
 
-func resourceSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCurSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
-	var subscription = subscriptionFromResourceData(d)
+	var subscription = curSubscriptionFromResourceData(d)
 
 	s, err := c.CreateCostAndUsageReportSubscription(subscription)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(s.Payload.ID)
-	resourceSubscriptionRead(ctx, d, m)
+	resourceCurSubscriptionRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCurSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
@@ -140,27 +140,27 @@ func resourceSubscriptionRead(ctx context.Context, d *schema.ResourceData, m int
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	subscriptionToResourceData(d, subscription.Payload)
+	curSubscriptionToResourceData(d, subscription.Payload)
 	return diags
 }
 
-func resourceSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	subscription := subscriptionFromResourceData(d)
+func resourceCurSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	subscription := curSubscriptionFromResourceData(d)
 	c := m.(Client)
 	_, err := c.UpdateCostAndUsageReportSubscription(subscription)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	return resourceSubscriptionRead(ctx, d, m)
+	return resourceCurSubscriptionRead(ctx, d, m)
 }
 
-func resourceSubscriptionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCurSubscriptionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 	var diags diag.Diagnostics
 
 	subscriptionId := d.Id()
 
-	err := c.DestroyCostAndUsageReportSubscription(subscriptionId)
+	err := c.DeleteCostAndUsageReportSubscription(subscriptionId)
 	if err != nil {
 		return diag.FromErr(err)
 	}

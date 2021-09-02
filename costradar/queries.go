@@ -3,7 +3,7 @@ package costradar
 var GetCostAndUsageReportSubscriptionQuery = `
 		query ($id: String!)
 			{
-			  awsCURSubscription(id: $id) {
+			  awsCurSubscription(id: $id) {
 				id
 				reportName
 				bucketName
