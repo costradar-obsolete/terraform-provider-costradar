@@ -1,9 +1,9 @@
 package main
 
 import (
-	"cr_provider_no_framework/costradar"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+	"terraform_provider_costradar/costradar"
 )
 
 func main() {

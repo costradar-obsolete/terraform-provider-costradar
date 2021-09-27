@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "costradar" {
-//  token   = "api_bsyz9nkv2G7l9NFCFepghgo7xrGHtFpZ"
+  token   = "api_bsyz9nkv2G7l9NFCFepghgo7xrGHtFpZ"
   endpoint = "http://localhost:8000/graphql"
 }
 
@@ -25,7 +25,16 @@ resource "costradar_cur_subscription" "test" {
     assume_role_session_name = "assume_role_session_name_value"
   }
 }
-
+//
+resource "costradar_cloudtrail_subscription" "test" {
+  source_arn         = "xxx:yyy:zzz:tf"
+  subscription_arn   = "aaa:bbb:ccc:tf"
+  bucket_name        = "bucket_name_changed"
+  account_id         = "test_123123"
+  access_config {
+    reader_mode              = "direct"
+  }
+}
 
 output "cur_subscription" {
   value = costradar_cur_subscription.test

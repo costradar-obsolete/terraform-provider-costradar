@@ -6,30 +6,26 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var resourceCurSubscriptionSchema = map[string]*schema.Schema{
+var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"report_name": {
+	"source_arn": {
 		Type:     schema.TypeString,
 		Required: true,
+	},
+	"subscription_arn": {
+		Type:     schema.TypeString,
+		Optional: true,
 	},
 	"bucket_name": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"bucket_region": {
-		Type:     schema.TypeString,
-		Required: true,
-	},
-	"bucket_path_prefix": {
+	"account_id": {
 		Type:     schema.TypeString,
 		Optional: true,
-	},
-	"time_unit": {
-		Type:     schema.TypeString,
-		Required: true,
 	},
 	"access_config": {
 		Type:     schema.TypeList,
@@ -59,20 +55,20 @@ var resourceCurSubscriptionSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceCurSubscription() *schema.Resource {
+func resourceCloudTrailSubscription() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceCurSubscriptionCreate,
-		ReadContext:   resourceCurSubscriptionRead,
-		UpdateContext: resourceCurSubscriptionUpdate,
-		DeleteContext: resourceCurSubscriptionDelete,
+		CreateContext: resourceCloudTrailSubscriptionCreate,
+		ReadContext:   resourceCloudTrailSubscriptionRead,
+		UpdateContext: resourceCloudTrailSubscriptionUpdate,
+		DeleteContext: resourceCloudTrailSubscriptionDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema: resourceCurSubscriptionSchema,
+		Schema: resourceCloudTrailSubscriptionSchema,
 	}
 }
 
-func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportSubscription {
+func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSubscription {
 	var accessConfig AccessConfig
 	accessConfigData := d.Get("access_config.0").(map[string]interface{})
 	if v, ok := accessConfigData["reader_mode"].(string); ok {
@@ -87,27 +83,19 @@ func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportS
 	if v, ok := accessConfigData["assume_role_session_name"].(string); ok {
 		accessConfig.AssumeRoleSessionName = v
 	}
-	subscription := CostAndUsageReportSubscription{
-		ID:               d.Get("id").(string),
-		ReportName:       d.Get("report_name").(string),
-		BucketName:       d.Get("bucket_name").(string),
-		BucketRegion:     d.Get("bucket_region").(string),
-		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
-		TimeUnit:         d.Get("time_unit").(string),
-		AccessConfig:     accessConfig,
+	subscription := CloudTrailSubscription{
+		ID:              d.Get("id").(string),
+		BucketName:      d.Get("bucket_name").(string),
+		SourceArn:       d.Get("source_arn").(string),
+		SubscriptionArn: d.Get("subscription_arn").(string),
+		AccountId:       d.Get("account_id").(string),
+		AccessConfig:    accessConfig,
 	}
 
 	return subscription
 }
 
-//func flattenStringList(list []*AccessConfig) []interface{} {
-//	for _, v := range list {
-//		vs = append(vs, *v)
-//	}
-//	return vs
-//}
-
-func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportSubscription) {
+func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSubscription) {
 	var accessConfigList []map[string]string
 	accessConfig := make(map[string]string)
 	accessConfig["reader_mode"] = s.AccessConfig.ReaderMode
@@ -115,62 +103,61 @@ func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportS
 	accessConfig["assume_role_external_id"] = s.AccessConfig.AssumeRoleExternalId
 	accessConfig["assume_role_session_name"] = s.AccessConfig.AssumeRoleSessionName
 	accessConfigList = append(accessConfigList, accessConfig)
-	d.Set("report_name", s.ReportName)
 	d.Set("bucket_name", s.BucketName)
-	d.Set("bucket_region", s.BucketRegion)
-	d.Set("bucket_path_prefix", s.BucketPathPrefix)
-	d.Set("time_unit", s.TimeUnit)
+	d.Set("source_arn", s.SourceArn)
+	d.Set("subscription_arn", s.SubscriptionArn)
+	d.Set("account_id", s.AccountId)
 	d.Set("access_config", accessConfigList)
 }
 
-func resourceCurSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCloudTrailSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
-	var subscription = curSubscriptionFromResourceData(d)
+	var subscription = cloudTrailSubscriptionFromResourceData(d)
 
-	s, err := c.CreateCostAndUsageReportSubscription(subscription)
+	s, err := c.CreateCloudTrailSubscription(subscription)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(s.Payload.ID)
-	resourceCurSubscriptionRead(ctx, d, m)
+	resourceCloudTrailSubscriptionRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceCurSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCloudTrailSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
 	subscriptionId := d.Id()
-	subscription, err := c.GetCostAndUsageReportSubscription(subscriptionId)
+	subscription, err := c.GetCloudTrailSubscription(subscriptionId)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	curSubscriptionToResourceData(d, subscription.Payload)
+	cloudTrailSubscriptionToResourceData(d, subscription.Payload)
 	return diags
 }
 
-func resourceCurSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	subscription := curSubscriptionFromResourceData(d)
+func resourceCloudTrailSubscriptionUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	subscription := cloudTrailSubscriptionFromResourceData(d)
 	c := m.(Client)
-	_, err := c.UpdateCostAndUsageReportSubscription(subscription)
+	_, err := c.UpdateCloudTrailSubscription(subscription)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	return resourceCurSubscriptionRead(ctx, d, m)
+	return resourceCloudTrailSubscriptionRead(ctx, d, m)
 }
 
-func resourceCurSubscriptionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceCloudTrailSubscriptionDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 	var diags diag.Diagnostics
 
 	subscriptionId := d.Id()
 
-	err := c.DeleteCostAndUsageReportSubscription(subscriptionId)
+	err := c.DeleteCloudTrailSubscription(subscriptionId)
 	if err != nil {
 		return diag.FromErr(err)
 	}

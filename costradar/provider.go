@@ -23,7 +23,8 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"costradar_cur_subscription": resourceCurSubscription(),
+			"costradar_cur_subscription":        resourceCurSubscription(),
+			"costradar_cloudtrail_subscription": resourceCloudTrailSubscription(),
 		},
 		DataSourcesMap:       map[string]*schema.Resource{},
 		ConfigureContextFunc: providerConfigure,

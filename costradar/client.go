@@ -3,6 +3,7 @@ package costradar
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"github.com/tidwall/gjson"
@@ -27,34 +28,54 @@ type CostAndUsageReportSubscription struct {
 	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
-type CostAndUsageReportPayload struct {
+type CloudTrailSubscription struct {
+	ID              string       `json:"id"`
+	SourceArn       string       `json:"sourceArn"`
+	SubscriptionArn string       `json:"subscriptionArn"`
+	BucketName      string       `json:"bucketName"`
+	AccountId       string       `json:"accountId"`
+	AccessConfig    AccessConfig `json:"accessConfig"`
+}
+
+type CloudTrailSubscriptionPayload struct {
+	Status  bool                   `json:"status"`
+	Error   string                 `json:"error"`
+	Payload CloudTrailSubscription `json:"payload"`
+}
+
+type CostAndUsageReportSubscriptionPayload struct {
 	Status  bool                           `json:"status"`
 	Error   string                         `json:"error"`
 	Payload CostAndUsageReportSubscription `json:"payload"`
 }
 
 type Client interface {
-	GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportPayload, error)
-	CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error)
-	UpdateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error)
+	GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportSubscriptionPayload, error)
+	CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportSubscriptionPayload, error)
+	UpdateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportSubscriptionPayload, error)
 	DeleteCostAndUsageReportSubscription(id string) error
+
+	GetCloudTrailSubscription(id string) (*CloudTrailSubscriptionPayload, error)
+	CreateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
+	UpdateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
+	DeleteCloudTrailSubscription(id string) error
 }
 
-type ClientGraphqlClient struct {
+type ClientGraphql struct {
 	endpoint   string
 	token      string
 	httpClient *http.Client
 }
 
 func NewCostRadarClient(endpoint, token string) Client {
-	return &ClientGraphqlClient{
+	return &ClientGraphql{
 		endpoint:   endpoint,
 		token:      token,
 		httpClient: &http.Client{},
 	}
 }
 
-func (c *ClientGraphqlClient) graphql(query string, variables map[string]interface{}, dataPath string) (data interface{}, err error) {
+func (c *ClientGraphql) graphql(query string, variables map[string]interface{}, dataPath string) (data interface{}, err error) {
 
 	payload := new(bytes.Buffer)
 
@@ -67,35 +88,44 @@ func (c *ClientGraphqlClient) graphql(query string, variables map[string]interfa
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", fmt.Sprintf("token %s", c.token))
 	resp, err := c.httpClient.Do(req)
-
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	errorMessage := getErrorFromBody(body, dataPath)
+
+	if errorMessage != "" {
+		return nil, errors.New(errorMessage)
+	}
+
 	data = gjson.GetBytes(body, dataPath).Value()
 	return data, err
 }
 
-func (c *ClientGraphqlClient) GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportPayload, error) {
+func (c *ClientGraphql) GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportSubscriptionPayload, error) {
 	query := GetCostAndUsageReportSubscriptionQuery
 
 	variables := map[string]interface{}{
 		"id": id,
 	}
-
 	subscription := CostAndUsageReportSubscription{}
 
-	data, err := c.graphql(query, variables, "data.awsCURSubscription")
+	data, err := c.graphql(query, variables, "data.awsCurSubscription")
+	if err != nil {
+		return nil, err
+	}
+
 	mapstructure.Decode(data, &subscription)
-	payload := CostAndUsageReportPayload{
+	payload := CostAndUsageReportSubscriptionPayload{
 		Payload: subscription,
 	}
 	return &payload, err
 }
 
-func (c *ClientGraphqlClient) CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error) {
+func (c *ClientGraphql) CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportSubscriptionPayload, error) {
 
 	query := CreateCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
@@ -110,14 +140,17 @@ func (c *ClientGraphqlClient) CreateCostAndUsageReportSubscription(subscription 
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload CostAndUsageReportPayload
+	var payload CostAndUsageReportSubscriptionPayload
 
 	data, err := c.graphql(query, variables, "data.awsCreateCurSubscription")
+	if err != nil {
+		return nil, err
+	}
 	mapstructure.Decode(data, &payload)
 	return &payload, err
 }
 
-func (c *ClientGraphqlClient) UpdateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportPayload, error) {
+func (c *ClientGraphql) UpdateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportSubscriptionPayload, error) {
 
 	query := UpdateCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
@@ -133,19 +166,102 @@ func (c *ClientGraphqlClient) UpdateCostAndUsageReportSubscription(subscription 
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload CostAndUsageReportPayload
+	var payload CostAndUsageReportSubscriptionPayload
 
 	data, err := c.graphql(query, variables, "data.awsUpdateCurSubscription")
+	if err != nil {
+		return nil, err
+	}
 	mapstructure.Decode(data, &payload)
 	return &payload, err
 }
 
-func (c *ClientGraphqlClient) DeleteCostAndUsageReportSubscription(id string) error {
+func (c *ClientGraphql) DeleteCostAndUsageReportSubscription(id string) error {
 	var query = DestroyCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
 		"id": id,
 	}
 
 	_, err := c.graphql(query, variables, "data.awsDeleteCurSubscription")
+	return err
+}
+
+func (c *ClientGraphql) GetCloudTrailSubscription(id string) (*CloudTrailSubscriptionPayload, error) {
+	var query = GetCloudTrailSubscriptionQuery
+
+	variables := map[string]interface{}{
+		"id": id,
+	}
+
+	subscription := CloudTrailSubscription{}
+
+	data, err := c.graphql(query, variables, "data.awsCloudTrailSubscription")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &subscription)
+	payload := CloudTrailSubscriptionPayload{
+		Payload: subscription,
+	}
+
+	return &payload, err
+}
+
+func (c *ClientGraphql) CreateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error) {
+
+	query := CreateCloudTrailSubscriptionQuery
+	variables := map[string]interface{}{
+		"sourceArn":             subscription.SourceArn,
+		"subscriptionArn":       subscription.SubscriptionArn,
+		"bucketName":            subscription.BucketName,
+		"accountId":             subscription.AccountId,
+		"readerMode":            subscription.AccessConfig.ReaderMode,
+		"assumeRoleArn":         subscription.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
+	}
+
+	var payload CloudTrailSubscriptionPayload
+
+	data, err := c.graphql(query, variables, "data.awsCreateCloudTrailSubscription")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &payload)
+	return &payload, err
+}
+
+func (c *ClientGraphql) UpdateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error) {
+
+	query := UpdateCloudTrailSubscriptionQuery
+	variables := map[string]interface{}{
+		"id":                    subscription.ID,
+		"sourceArn":             subscription.SourceArn,
+		"subscriptionArn":       subscription.SubscriptionArn,
+		"bucketName":            subscription.BucketName,
+		"accountId":             subscription.AccountId,
+		"readerMode":            subscription.AccessConfig.ReaderMode,
+		"assumeRoleArn":         subscription.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
+	}
+
+	var payload CloudTrailSubscriptionPayload
+
+	data, err := c.graphql(query, variables, "data.awsUpdateCloudTrailSubscription")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &payload)
+	return &payload, err
+}
+
+func (c *ClientGraphql) DeleteCloudTrailSubscription(id string) error {
+	var query = DeleteCloudTrailSubscriptionQuery
+	variables := map[string]interface{}{
+		"id": id,
+	}
+
+	_, err := c.graphql(query, variables, "data.awsDeleteCloudTrailSubscription")
 	return err
 }
