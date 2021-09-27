@@ -9,6 +9,7 @@ import (
 	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 type AccessConfig struct {
@@ -94,6 +95,11 @@ func (c *ClientGraphql) graphql(query string, variables map[string]interface{}, 
 
 	body, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		err = errors.New("Status code: " + strconv.Itoa(resp.StatusCode) + ". Message: " + gjson.GetBytes(body, "error").String())
+		return nil, err
+	}
 
 	errorMessage := getErrorFromBody(body, dataPath)
 
