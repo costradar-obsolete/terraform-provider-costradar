@@ -8,6 +8,7 @@ query ($id: String!) {
 		bucketName
 		bucketRegion
 		bucketPathPrefix
+		sourceTopicArn
 		timeUnit
 		accessConfig {
 			readerMode
@@ -21,6 +22,7 @@ query ($id: String!) {
 
 var CreateCostAndUsageReportSubscriptionQuery = `
 mutation (
+	$sourceTopicArn: String!
 	$bucketName: String!
 	$bucketRegion: String!
 	$bucketPathPrefix: String
@@ -36,6 +38,7 @@ mutation (
 		bucketRegion: $bucketRegion,
 		bucketPathPrefix: $bucketPathPrefix,
 		reportName: $reportName,
+		sourceTopicArn: $sourceTopicArn,
 		timeUnit: $timeUnit,
 		accessConfig:{
 			readerMode: $readerMode
@@ -48,6 +51,7 @@ mutation (
 		error
 		payload {
 			id
+            sourceTopicArn
 			reportName
 			bucketName
 			bucketRegion
@@ -67,6 +71,7 @@ mutation (
 var UpdateCostAndUsageReportSubscriptionQuery = `
 mutation (
 	$id: String!
+	$sourceTopicArn: String!
 	$bucketName: String!
 	$bucketRegion: String!
 	$bucketPathPrefix: String
@@ -82,6 +87,7 @@ mutation (
 		bucketRegion: $bucketRegion,
 		bucketPathPrefix: $bucketPathPrefix,
 		reportName: $reportName,
+		sourceTopicArn: $sourceTopicArn,
 		timeUnit: $timeUnit,
 		accessConfig:{
 			readerMode: $readerMode
@@ -94,6 +100,7 @@ mutation (
 		error
 		payload {
 			id
+			sourceTopicArn
 			reportName
 			bucketName
 			bucketRegion
@@ -112,11 +119,11 @@ mutation (
 
 var DestroyCostAndUsageReportSubscriptionQuery = `
 mutation($id: String!) {
-		awsDeleteCurSubscription(subscriptionId: $id){
+	awsDeleteCurSubscription(subscriptionId: $id) {
 		status
 		error
 		payload {
-		  	id
+			id
 		}
 	}
 }
@@ -127,10 +134,11 @@ query ($id: String!) {
 	awsCloudTrailSubscription(id: $id) {
 		id
 		tenant
-		sourceArn
-		subscriptionArn
-		accountId
-		bucketName
+		trailName
+      	bucketName
+      	bucketRegion
+      	bucketPathPrefix
+      	sourceTopicArn
 		accessConfig {
 			readerMode
 			assumeRoleArn
@@ -143,20 +151,22 @@ query ($id: String!) {
 
 var CreateCloudTrailSubscriptionQuery = `
 mutation (
-	$sourceArn: String!
-	$subscriptionArn: String
+	$trailName: String!
 	$bucketName: String!
-	$accountId: String
+	$bucketRegion: String!
+    $bucketPathPrefix: String
+	$sourceTopicArn: String!
 	$readerMode: ReaderMode!
 	$assumeRoleArn: String
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
 	awsCreateCloudTrailSubscription(input:{
-		sourceArn: $sourceArn,
-		subscriptionArn: $subscriptionArn,
-		bucketName: $bucketName,
-		accountId: $accountId,
+		trailName: $trailName,
+      	bucketName: $bucketName,
+      	bucketRegion: $bucketRegion,
+      	bucketPathPrefix: $bucketPathPrefix,
+      	sourceTopicArn: $sourceTopicArn,
 		accessConfig:{
 			readerMode: $readerMode
 			assumeRoleArn: $assumeRoleArn
@@ -168,10 +178,12 @@ mutation (
 		error
 		payload {
 			id
-			sourceArn
-			subscriptionArn
+			tenant
+			trailName
 			bucketName
-			accountId
+			bucketRegion
+			bucketPathPrefix
+			sourceTopicArn
 			accessConfig {
 				readerMode
 				assumeRoleArn
@@ -185,36 +197,39 @@ mutation (
 
 var UpdateCloudTrailSubscriptionQuery = `
 mutation (
-	$id: String!
-	$sourceArn: String!
-	$subscriptionArn: String
+	$trailName: String!
 	$bucketName: String!
-	$accountId: String
+	$bucketRegion: String!
+    $bucketPathPrefix: String
+	$sourceTopicArn: String!
 	$readerMode: ReaderMode!
 	$assumeRoleArn: String
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsUpdateCloudTrailSubscription(subscriptionId: $id, input:{
-		sourceArn: $sourceArn,
-		subscriptionArn: $subscriptionArn,
-		bucketName: $bucketName,
-		accountId: $accountId
+	awsUpdateCloudTrailSubscription(subscriptionId: $id, input: {
+		trailName: $trailName,
+      	bucketName: $bucketName,
+      	bucketRegion: $bucketRegion,
+      	bucketPathPrefix: $bucketPathPrefix,
+      	sourceTopicArn: $sourceTopicArn,
 		accessConfig:{
 			readerMode: $readerMode
 			assumeRoleArn: $assumeRoleArn
 			assumeRoleExternalId: $assumeRoleExternalId
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
-  	}){
+  	}) {
 		status
 		error
 		payload {
 			id
-			sourceArn
-			subscriptionArn
+			tenant
+			trailName
 			bucketName
-			accountId
+			bucketRegion
+			bucketPathPrefix
+			sourceTopicArn
 			accessConfig {
 				readerMode
 				assumeRoleArn
@@ -228,7 +243,7 @@ mutation (
 
 var DeleteCloudTrailSubscriptionQuery = `
 mutation($id: String!) {
-		awsDeleteCloudTrailSubscription(subscriptionId: $id){
+		awsDeleteCloudTrailSubscription(subscriptionId: $id) {
 		status
 		error
 		payload {

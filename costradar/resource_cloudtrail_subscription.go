@@ -2,6 +2,7 @@ package costradar
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -11,21 +12,25 @@ var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"source_arn": {
+	"trail_name": {
 		Type:     schema.TypeString,
 		Required: true,
-	},
-	"subscription_arn": {
-		Type:     schema.TypeString,
-		Optional: true,
 	},
 	"bucket_name": {
 		Type:     schema.TypeString,
 		Required: true,
 	},
-	"account_id": {
+	"bucket_region": {
+		Type:     schema.TypeString,
+		Required: true,
+	},
+	"bucket_path_prefix": {
 		Type:     schema.TypeString,
 		Optional: true,
+	},
+	"source_topic_arn": {
+		Type:     schema.TypeString,
+		Required: true,
 	},
 	"access_config": {
 		Type:     schema.TypeList,
@@ -83,16 +88,18 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 	if v, ok := accessConfigData["assume_role_session_name"].(string); ok {
 		accessConfig.AssumeRoleSessionName = v
 	}
-	subscription := CloudTrailSubscription{
-		ID:              d.Get("id").(string),
-		BucketName:      d.Get("bucket_name").(string),
-		SourceArn:       d.Get("source_arn").(string),
-		SubscriptionArn: d.Get("subscription_arn").(string),
-		AccountId:       d.Get("account_id").(string),
-		AccessConfig:    accessConfig,
+
+	sub := CloudTrailSubscription{
+		ID:                         d.Get("id").(string),
+		TrailName:                  d.Get("trail_name").(string),
+		BucketName:                 d.Get("bucket_name").(string),
+		BucketRegion:               d.Get("bucket_region").(string),
+		BucketPathPrefix:           d.Get("bucket_path_prefix").(string),
+		SourceTopicArn:             d.Get("source_topic_arn").(string),
+		AccessConfig:               accessConfig,
 	}
 
-	return subscription
+	return sub
 }
 
 func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSubscription) {
@@ -103,10 +110,11 @@ func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSu
 	accessConfig["assume_role_external_id"] = s.AccessConfig.AssumeRoleExternalId
 	accessConfig["assume_role_session_name"] = s.AccessConfig.AssumeRoleSessionName
 	accessConfigList = append(accessConfigList, accessConfig)
+	d.Set("trail_name", s.TrailName)
 	d.Set("bucket_name", s.BucketName)
-	d.Set("source_arn", s.SourceArn)
-	d.Set("subscription_arn", s.SubscriptionArn)
-	d.Set("account_id", s.AccountId)
+	d.Set("bucket_region", s.BucketRegion)
+	d.Set("bucket_path_prefix", s.BucketPathPrefix)
+	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("access_config", accessConfigList)
 }
 

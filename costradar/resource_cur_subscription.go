@@ -31,6 +31,10 @@ var resourceCurSubscriptionSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Required: true,
 	},
+	"source_topic_arn": {
+		Type: schema.TypeString,
+		Required: true,
+	},
 	"access_config": {
 		Type:     schema.TypeList,
 		Required: true,
@@ -93,6 +97,7 @@ func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportS
 		BucketName:       d.Get("bucket_name").(string),
 		BucketRegion:     d.Get("bucket_region").(string),
 		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
+		SourceTopicArn:   d.Get("source_topic_arn").(string),
 		TimeUnit:         d.Get("time_unit").(string),
 		AccessConfig:     accessConfig,
 	}
@@ -119,6 +124,7 @@ func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportS
 	d.Set("bucket_name", s.BucketName)
 	d.Set("bucket_region", s.BucketRegion)
 	d.Set("bucket_path_prefix", s.BucketPathPrefix)
+	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("time_unit", s.TimeUnit)
 	d.Set("access_config", accessConfigList)
 }

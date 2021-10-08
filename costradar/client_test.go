@@ -14,7 +14,7 @@ var _ = Describe("Costradar http client", func() {
 
 	BeforeEach(func() {
 		server = ghttp.NewServer()
-		costradarClient = NewCostRadarClient(server.URL()+"/graphql", "api_bsyz9nkv2G7l9NFCFepghgo7xrGHtFpZ")
+		costradarClient = NewCostRadarClient(server.URL() + "/graphql", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	})
 
 	AfterEach(func() {
@@ -140,10 +140,10 @@ var _ = Describe("Costradar http client", func() {
 			ghttp.RespondWith(http.StatusOK, createCloudTrailSubscriptionSuccess()),
 		))
 		createSubscription := CloudTrailSubscription{
-			SourceArn:       "source_arn",
-			SubscriptionArn: "subscription_arn",
-			BucketName:      "bucket_name",
-			AccountId:       "123",
+			TrailName:      "trail-name",
+			SourceTopicArn: "topic-arn",
+			BucketName:     "bucket",
+			BucketRegion:   "region",
 			AccessConfig: AccessConfig{
 				ReaderMode:            "assumeRole",
 				AssumeRoleArn:         "ARN",
@@ -155,10 +155,10 @@ var _ = Describe("Costradar http client", func() {
 		Expect(err).To(BeNil())
 		Expect(subscription).ToNot(BeNil())
 		Expect(subscription.Payload.ID).To(Equal("614ae6fc151407505898f1af"))
-		Expect(subscription.Payload.SourceArn).To(Equal("source_arn"))
-		Expect(subscription.Payload.SubscriptionArn).To(Equal("subscription_arn"))
-		Expect(subscription.Payload.BucketName).To(Equal("bucket_name"))
-		Expect(subscription.Payload.AccountId).To(Equal("123"))
+		Expect(subscription.Payload.TrailName).To(Equal("trail"))
+		Expect(subscription.Payload.SourceTopicArn).To(Equal("topic-arn"))
+		Expect(subscription.Payload.BucketName).To(Equal("bucket"))
+		Expect(subscription.Payload.BucketRegion).To(Equal("region"))
 		Expect(subscription.Payload.AccessConfig.ReaderMode).To(Equal("assumeRole"))
 		Expect(subscription.Payload.AccessConfig.AssumeRoleArn).To(Equal("ARN"))
 		Expect(subscription.Payload.AccessConfig.AssumeRoleExternalId).To(Equal("ID"))
@@ -175,10 +175,8 @@ var _ = Describe("Costradar http client", func() {
 		Expect(err).To(BeNil())
 		Expect(subscription).ToNot(BeNil())
 		Expect(subscription.Payload.ID).To(Equal("614ae6fc151407505898f1af"))
-		Expect(subscription.Payload.SourceArn).To(Equal("source_arn"))
-		Expect(subscription.Payload.SubscriptionArn).To(Equal("subscription_arn"))
-		Expect(subscription.Payload.BucketName).To(Equal("bucket_name"))
-		Expect(subscription.Payload.AccountId).To(Equal("123"))
+		Expect(subscription.Payload.SourceTopicArn).To(Equal("topic-arn"))
+		Expect(subscription.Payload.BucketName).To(Equal("bucket"))
 		Expect(subscription.Payload.AccessConfig.ReaderMode).To(Equal("assumeRole"))
 		Expect(subscription.Payload.AccessConfig.AssumeRoleArn).To(Equal("ARN"))
 		Expect(subscription.Payload.AccessConfig.AssumeRoleExternalId).To(Equal("ID"))
@@ -192,10 +190,10 @@ var _ = Describe("Costradar http client", func() {
 		))
 
 		updateSubscription := CloudTrailSubscription{
-			SourceArn:       "source_arn_x",
-			SubscriptionArn: "subscription_arn_x",
-			BucketName:      "bucket_name_x",
-			AccountId:       "123_x",
+			TrailName:      "trail-name",
+			SourceTopicArn: "topic-arn",
+			BucketName:     "bucket",
+			BucketRegion:   "region",
 			AccessConfig: AccessConfig{
 				ReaderMode: "direct",
 			},
@@ -203,10 +201,10 @@ var _ = Describe("Costradar http client", func() {
 		subscription, err := costradarClient.UpdateCloudTrailSubscription(updateSubscription)
 		Expect(err).To(BeNil())
 		Expect(subscription.Payload.ID).To(Equal("614ae6fc151407505898f1af"))
-		Expect(subscription.Payload.SourceArn).To(Equal("source_arn_x"))
-		Expect(subscription.Payload.SubscriptionArn).To(Equal("subscription_arn_x"))
-		Expect(subscription.Payload.BucketName).To(Equal("bucket_name_x"))
-		Expect(subscription.Payload.AccountId).To(Equal("123_x"))
+		Expect(subscription.Payload.TrailName).To(Equal("trail-u"))
+		Expect(subscription.Payload.SourceTopicArn).To(Equal("topic-arn-u"))
+		Expect(subscription.Payload.BucketRegion).To(Equal("region-u"))
+		Expect(subscription.Payload.BucketName).To(Equal("bucket-u"))
 		Expect(subscription.Payload.AccessConfig.ReaderMode).To(Equal("direct"))
 	})
 
@@ -361,10 +359,11 @@ func getCloudTrailSubscriptionSuccess() string {
 	  "data": {
 		"awsCloudTrailSubscription": {
 		  "id": "614ae6fc151407505898f1af",
-		  "sourceArn": "source_arn",
-		  "subscriptionArn": "subscription_arn",
-		  "bucketName": "bucket_name",
-		  "accountId": "123",
+		  "sourceTopicArn": "topic-arn",
+          "trailName": "trail",
+		  "bucketName": "bucket",
+		  "bucketRegion": "region",
+		  "bucketPathPrefix": "prefix",
 		  "accessConfig": {
 			"readerMode": "assumeRole",
 			"assumeRoleArn": "ARN",
@@ -384,10 +383,11 @@ func createCloudTrailSubscriptionSuccess() string {
 		  "error": null,
 		  "payload": {
 			"id": "614ae6fc151407505898f1af",
-			"sourceArn": "source_arn",
-			"subscriptionArn": "subscription_arn",
-			"bucketName": "bucket_name",
-			"accountId": "123",
+			"sourceTopicArn": "topic-arn",
+            "trailName": "trail",
+		    "bucketName": "bucket",
+		    "bucketRegion": "region",
+		    "bucketPathPrefix": "prefix",
 			"accessConfig": {
 			  "readerMode": "assumeRole",
 			  "assumeRoleArn": "ARN",
@@ -408,10 +408,11 @@ func updateCloudTrailSubscriptionSuccess() string {
 		  "error": null,
 		  "payload": {
 			"id": "614ae6fc151407505898f1af",
-			"sourceArn": "source_arn_x",
-			"subscriptionArn": "subscription_arn_x",
-			"bucketName": "bucket_name_x",
-			"accountId": "123_x",
+			"sourceTopicArn": "topic-arn-u",
+		    "trailName": "trail-u",
+		    "bucketName": "bucket-u",
+		    "bucketRegion": "region-u",
+		    "bucketPathPrefix": "prefix-u",
 			"accessConfig": {
 			  "readerMode": "direct",
 			  "assumeRoleArn": null,

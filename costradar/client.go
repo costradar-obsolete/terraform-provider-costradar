@@ -26,16 +26,18 @@ type CostAndUsageReportSubscription struct {
 	BucketRegion     string       `json:"bucketRegion"`
 	BucketPathPrefix string       `json:"bucketPathPrefix"`
 	TimeUnit         string       `json:"timeUnit"`
+	SourceTopicArn   string       `json:"sourceTopicArn"`
 	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
 type CloudTrailSubscription struct {
-	ID              string       `json:"id"`
-	SourceArn       string       `json:"sourceArn"`
-	SubscriptionArn string       `json:"subscriptionArn"`
-	BucketName      string       `json:"bucketName"`
-	AccountId       string       `json:"accountId"`
-	AccessConfig    AccessConfig `json:"accessConfig"`
+	ID                         string `json:"id"`
+	TrailName                  string `json:"trailName"`
+	BucketName                 string `json:"bucketName"`
+	BucketRegion               string `json:"bucketRegion"`
+	BucketPathPrefix           string `json:"bucketPathPrefix"`
+	SourceTopicArn             string `json:"sourceTopicArn"`
+	AccessConfig     AccessConfig     `json:"accessConfig"`
 }
 
 type CloudTrailSubscriptionPayload struct {
@@ -135,6 +137,7 @@ func (c *ClientGraphql) CreateCostAndUsageReportSubscription(subscription CostAn
 
 	query := CreateCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
+		"sourceTopicArn":        subscription.SourceTopicArn,
 		"bucketName":            subscription.BucketName,
 		"bucketRegion":          subscription.BucketRegion,
 		"bucketPathPrefix":      subscription.BucketPathPrefix,
@@ -166,6 +169,7 @@ func (c *ClientGraphql) UpdateCostAndUsageReportSubscription(subscription CostAn
 		"bucketPathPrefix":      subscription.BucketPathPrefix,
 		"reportName":            subscription.ReportName,
 		"timeUnit":              subscription.TimeUnit,
+		"sourceTopicArn":        subscription.SourceTopicArn,
 		"readerMode":            subscription.AccessConfig.ReaderMode,
 		"assumeRoleArn":         subscription.AccessConfig.AssumeRoleArn,
 		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
@@ -217,10 +221,12 @@ func (c *ClientGraphql) CreateCloudTrailSubscription(subscription CloudTrailSubs
 
 	query := CreateCloudTrailSubscriptionQuery
 	variables := map[string]interface{}{
-		"sourceArn":             subscription.SourceArn,
-		"subscriptionArn":       subscription.SubscriptionArn,
+		"id":                    subscription.ID,
 		"bucketName":            subscription.BucketName,
-		"accountId":             subscription.AccountId,
+		"bucketRegion":          subscription.BucketRegion,
+		"bucketPathPrefix":      subscription.BucketPathPrefix,
+		"trailName":             subscription.TrailName,
+		"sourceTopicArn":        subscription.SourceTopicArn,
 		"readerMode":            subscription.AccessConfig.ReaderMode,
 		"assumeRoleArn":         subscription.AccessConfig.AssumeRoleArn,
 		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
@@ -242,10 +248,11 @@ func (c *ClientGraphql) UpdateCloudTrailSubscription(subscription CloudTrailSubs
 	query := UpdateCloudTrailSubscriptionQuery
 	variables := map[string]interface{}{
 		"id":                    subscription.ID,
-		"sourceArn":             subscription.SourceArn,
-		"subscriptionArn":       subscription.SubscriptionArn,
 		"bucketName":            subscription.BucketName,
-		"accountId":             subscription.AccountId,
+		"bucketRegion":          subscription.BucketRegion,
+		"bucketPathPrefix":      subscription.BucketPathPrefix,
+		"trailName":             subscription.TrailName,
+		"sourceTopicArn":        subscription.SourceTopicArn,
 		"readerMode":            subscription.AccessConfig.ReaderMode,
 		"assumeRoleArn":         subscription.AccessConfig.AssumeRoleArn,
 		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
