@@ -9,7 +9,7 @@ import (
 )
 
 func TestAccCurSubscription(t *testing.T) {
-	os.Setenv("COSTRADAR_TOKEN", "api_bsyz9nkv2G7l9NFCFepghgo7xrGHtFpZ")
+	os.Setenv("COSTRADAR_TOKEN", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
 	resourceName := "costradar_cur_subscription.test"
 	resource.Test(t, resource.TestCase{
