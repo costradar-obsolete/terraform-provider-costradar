@@ -32,7 +32,7 @@ var resourceCurSubscriptionSchema = map[string]*schema.Schema{
 		Required: true,
 	},
 	"source_topic_arn": {
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Required: true,
 	},
 	"access_config": {
@@ -104,13 +104,6 @@ func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportS
 
 	return subscription
 }
-
-//func flattenStringList(list []*AccessConfig) []interface{} {
-//	for _, v := range list {
-//		vs = append(vs, *v)
-//	}
-//	return vs
-//}
 
 func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportSubscription) {
 	var accessConfigList []map[string]string

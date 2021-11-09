@@ -117,7 +117,7 @@ mutation (
 }
 `
 
-var DestroyCostAndUsageReportSubscriptionQuery = `
+var DeleteCostAndUsageReportSubscriptionQuery = `
 mutation($id: String!) {
 	awsDeleteCurSubscription(subscriptionId: $id) {
 		status
@@ -133,7 +133,6 @@ var GetCloudTrailSubscriptionQuery = `
 query ($id: String!) {
 	awsCloudTrailSubscription(id: $id) {
 		id
-		tenant
 		trailName
       	bucketName
       	bucketRegion
@@ -178,7 +177,6 @@ mutation (
 		error
 		payload {
 			id
-			tenant
 			trailName
 			bucketName
 			bucketRegion
@@ -224,7 +222,6 @@ mutation (
 		error
 		payload {
 			id
-			tenant
 			trailName
 			bucketName
 			bucketRegion
@@ -243,12 +240,111 @@ mutation (
 
 var DeleteCloudTrailSubscriptionQuery = `
 mutation($id: String!) {
-		awsDeleteCloudTrailSubscription(subscriptionId: $id) {
+	awsDeleteCloudTrailSubscription(subscriptionId: $id) {
+	status
+	error
+	payload {
+		id
+	}}
+}
+`
+
+var AwsIntegrationMeta = `
+query{
+  awsIntegrationMeta {
+    CostAndUsageReportSqsArn
+    CostAndUsageReportSqsUrl
+    CloudTrailSqsArn
+    CloudTrailSqsUrl
+  }
+}
+`
+
+var GetUserIdentityResolverConfig = `
+query ($id: String!) {
+  	awsUserIdentityResolverConfig(id: $id){
+		id
+		lambdaArn
+		accessConfig {
+			readerMode
+			assumeRoleArn
+			assumeRoleExternalId
+			assumeRoleSessionName
+		}
+  	}
+}`
+
+var CreateUserIdentityResolverConfig = `
+mutation (
+	$lambdaArn: String!
+	$readerMode: ReaderMode!
+	$assumeRoleArn: String
+	$assumeRoleExternalId: String
+	$assumeRoleSessionName: String
+){
+	awsCreateUserIdentityResolverConfig(input:{
+		lambdaArn: $lambdaArn,
+		accessConfig:{
+			readerMode: $readerMode,
+			assumeRoleArn: $assumeRoleArn,
+			assumeRoleExternalId: $assumeRoleExternalId,
+			assumeRoleSessionName: $assumeRoleSessionName
+		}
+	}){
 		status
 		error
 		payload {
-		  	id
+			id
+			lambdaArn
+			accessConfig {
+				readerMode
+				assumeRoleArn
+				assumeRoleExternalId
+				assumeRoleSessionName
+			}
 		}
 	}
-}
-`
+}`
+
+var UpdateUserIdentityResolverConfig = `
+mutation (
+	$id: String!
+	$lambdaArn: String!
+	$readerMode: ReaderMode!
+	$assumeRoleArn: String
+	$assumeRoleExternalId: String
+	$assumeRoleSessionName: String
+){
+	awsUpdateUserIdentityResolverConfig(resolverConfigId: $id, input:{
+		lambdaArn: $lambdaArn,
+		accessConfig:{
+			readerMode: $readerMode,
+			assumeRoleArn: $assumeRoleArn,
+			assumeRoleExternalId: $assumeRoleExternalId,
+			assumeRoleSessionName: $assumeRoleSessionName
+		}
+	}){
+		status
+		error
+		payload {
+			id
+			lambdaArn
+			accessConfig {
+				readerMode
+				assumeRoleArn
+				assumeRoleExternalId
+				assumeRoleSessionName
+			}
+		}
+	}
+}`
+
+var DeleteUserIdentityResolverConfig = `
+mutation($id: String!) {
+	awsDeleteUserIdentityResolverConfig(resolverConfigId: $id) {
+	status
+	error
+	payload {
+		id
+	}}
+}`

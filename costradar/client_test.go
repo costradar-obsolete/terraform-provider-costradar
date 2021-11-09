@@ -14,7 +14,7 @@ var _ = Describe("Costradar http client", func() {
 
 	BeforeEach(func() {
 		server = ghttp.NewServer()
-		costradarClient = NewCostRadarClient(server.URL() + "/graphql", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
+		costradarClient = NewCostRadarClient(server.URL()+"/graphql", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	})
 
 	AfterEach(func() {

@@ -8,13 +8,11 @@ import (
 	"testing"
 )
 
-func TestAccCurSubscription(t *testing.T) {
+func TestAccUserIdentityResolverConfig(t *testing.T) {
 	os.Setenv("COSTRADAR_TOKEN", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
-	resourceName := "costradar_cur_subscription.test"
+	resourceName := "costradar_user_identity_resolver_config.test"
 	resource.Test(t, resource.TestCase{
-		//PreCheck:   func() { testAccPreCheck(t) },
-		//ErrorCheck: testAccErrorCheck(t, ec2.EndpointsID),
 		ProviderFactories: map[string]func() (*schema.Provider, error){
 			"costradar": func() (*schema.Provider, error) {
 				return Provider(), nil
@@ -22,13 +20,9 @@ func TestAccCurSubscription(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCurSubscriptionTF(),
+				Config: testAccUserIdentityResolverConfigTF(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceName, "report_name", "report_name"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-costradar-bucket"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_region", "bucket_region"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_path_prefix", "xxx!!"),
-					resource.TestCheckResourceAttr(resourceName, "time_unit", "hour"),
+					resource.TestCheckResourceAttr(resourceName, "lambda_arn", "123:xxx:yyy"),
 					resource.TestCheckResourceAttr(resourceName, "access_config.0.reader_mode", "direct"),
 					resource.TestCheckResourceAttr(resourceName, "access_config.0.assume_role_arn", "assume_role_arn_value"),
 					resource.TestCheckResourceAttr(resourceName, "access_config.0.assume_role_external_id", "assume_role_external_id_value"),
@@ -39,15 +33,10 @@ func TestAccCurSubscription(t *testing.T) {
 	})
 }
 
-func testAccCurSubscriptionTF() string {
+func testAccUserIdentityResolverConfigTF() string {
 	return `
-	  resource "costradar_cur_subscription" "test" {
-	  	report_name        = "report_name"
-	  	bucket_name        = "test-costradar-bucket"
-	  	bucket_region      = "bucket_region"
-	  	bucket_path_prefix = "xxx!!"
-	  	time_unit          = "hour"
-		source_topic_arn   = "topic-arn"
+	  resource "costradar_user_identity_resolver_config" "test" {
+	  	lambda_arn = "123:xxx:yyy"
 	  	access_config {
 		  reader_mode              = "direct"
  		  assume_role_arn          = "assume_role_arn_value"

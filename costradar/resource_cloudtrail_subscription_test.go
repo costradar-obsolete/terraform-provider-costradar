@@ -22,7 +22,7 @@ func TestAccCloudTrailSubscription(t *testing.T) {
 				Config: testAccCloudTrailSubscriptionTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "trail_name", "trail-name"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_name", "bucket"),
+					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-costradar-bucket"),
 					resource.TestCheckResourceAttr(resourceName, "source_topic_arn", "topic-arn"),
 				),
 			},
@@ -34,15 +34,15 @@ func testAccCloudTrailSubscriptionTF() string {
 	return `
 	  resource "costradar_cloudtrail_subscription" "test" {
 		  trail_name         = "trail-name"
-		  bucket_name        = "bucket"
+		  bucket_name        = "test-costradar-bucket"
 		  bucket_region      = "region"
 		  bucket_path_prefix = "prefix"
           source_topic_arn   = "topic-arn"
-          include_global_service_events = true
-          is_multi_region_trail = true
-          is_organization_trail = false
+          //include_global_service_events = true
+          //is_multi_region_trail = true
+          //is_organization_trail = false
 		  access_config {
-			reader_mode              = "assumeRole"
+			reader_mode              = "direct"
 			assume_role_arn          = "assume_role_arn_value"
 			assume_role_external_id  = "assume_role_external_id_value"
 			assume_role_session_name = "assume_role_session_name_value"

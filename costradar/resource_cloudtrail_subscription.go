@@ -90,13 +90,13 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 	}
 
 	sub := CloudTrailSubscription{
-		ID:                         d.Get("id").(string),
-		TrailName:                  d.Get("trail_name").(string),
-		BucketName:                 d.Get("bucket_name").(string),
-		BucketRegion:               d.Get("bucket_region").(string),
-		BucketPathPrefix:           d.Get("bucket_path_prefix").(string),
-		SourceTopicArn:             d.Get("source_topic_arn").(string),
-		AccessConfig:               accessConfig,
+		ID:               d.Get("id").(string),
+		TrailName:        d.Get("trail_name").(string),
+		BucketName:       d.Get("bucket_name").(string),
+		BucketRegion:     d.Get("bucket_region").(string),
+		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
+		SourceTopicArn:   d.Get("source_topic_arn").(string),
+		AccessConfig:     accessConfig,
 	}
 
 	return sub

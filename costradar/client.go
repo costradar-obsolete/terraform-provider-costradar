@@ -31,13 +31,25 @@ type CostAndUsageReportSubscription struct {
 }
 
 type CloudTrailSubscription struct {
-	ID                         string `json:"id"`
-	TrailName                  string `json:"trailName"`
-	BucketName                 string `json:"bucketName"`
-	BucketRegion               string `json:"bucketRegion"`
-	BucketPathPrefix           string `json:"bucketPathPrefix"`
-	SourceTopicArn             string `json:"sourceTopicArn"`
-	AccessConfig     AccessConfig     `json:"accessConfig"`
+	ID               string       `json:"id"`
+	TrailName        string       `json:"trailName"`
+	BucketName       string       `json:"bucketName"`
+	BucketRegion     string       `json:"bucketRegion"`
+	BucketPathPrefix string       `json:"bucketPathPrefix"`
+	SourceTopicArn   string       `json:"sourceTopicArn"`
+	AccessConfig     AccessConfig `json:"accessConfig"`
+}
+
+type UserIdentityResolverConfig struct {
+	ID           string       `json:"id"`
+	LambdaArn    string       `json:"lambdaArn"`
+	AccessConfig AccessConfig `json:"accessConfig"`
+}
+
+type UserIdentityResolverConfigPayload struct {
+	Status  bool                       `json:"status"`
+	Error   bool                       `json:"error"`
+	Payload UserIdentityResolverConfig `json:"payload"`
 }
 
 type CloudTrailSubscriptionPayload struct {
@@ -52,6 +64,13 @@ type CostAndUsageReportSubscriptionPayload struct {
 	Payload CostAndUsageReportSubscription `json:"payload"`
 }
 
+type IntegrationMeta struct {
+	CostAndUsageReportSqsArn string `json:"CostAndUsageReportSqsArn"`
+	CostAndUsageReportSqsUrl string `json:"CostAndUsageReportSqsUrl"`
+	CloudTrailSqsArn         string `json:"CloudTrailSqsArn"`
+	CloudTrailSqsUrn         string `json:"CloudTrailSqsUrl"`
+}
+
 type Client interface {
 	GetCostAndUsageReportSubscription(id string) (*CostAndUsageReportSubscriptionPayload, error)
 	CreateCostAndUsageReportSubscription(subscription CostAndUsageReportSubscription) (*CostAndUsageReportSubscriptionPayload, error)
@@ -62,6 +81,12 @@ type Client interface {
 	CreateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
 	UpdateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
 	DeleteCloudTrailSubscription(id string) error
+
+	GetUserIdentityResolverConfig(id string) (*UserIdentityResolverConfigPayload, error)
+	CreateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error)
+	UpdateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error)
+	DeleteUserIdentityResolverConfig(id string) error
+	GetIntegrationMeta() (*IntegrationMeta, error)
 }
 
 type ClientGraphql struct {
@@ -187,7 +212,7 @@ func (c *ClientGraphql) UpdateCostAndUsageReportSubscription(subscription CostAn
 }
 
 func (c *ClientGraphql) DeleteCostAndUsageReportSubscription(id string) error {
-	var query = DestroyCostAndUsageReportSubscriptionQuery
+	var query = DeleteCostAndUsageReportSubscriptionQuery
 	variables := map[string]interface{}{
 		"id": id,
 	}
@@ -277,4 +302,87 @@ func (c *ClientGraphql) DeleteCloudTrailSubscription(id string) error {
 
 	_, err := c.graphql(query, variables, "data.awsDeleteCloudTrailSubscription")
 	return err
+}
+
+func (c *ClientGraphql) GetUserIdentityResolverConfig(id string) (*UserIdentityResolverConfigPayload, error) {
+	query := GetUserIdentityResolverConfig
+
+	variables := map[string]interface{}{
+		"id": id,
+	}
+	resolverConfig := UserIdentityResolverConfig{}
+
+	data, err := c.graphql(query, variables, "data.awsUserIdentityResolverConfig")
+	if err != nil {
+		return nil, err
+	}
+
+	mapstructure.Decode(data, &resolverConfig)
+	payload := UserIdentityResolverConfigPayload{
+		Payload: resolverConfig,
+	}
+	return &payload, err
+}
+
+func (c *ClientGraphql) CreateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error) {
+	query := CreateUserIdentityResolverConfig
+	variables := map[string]interface{}{
+		"id":                    resolverConfig.ID,
+		"lambdaArn":             resolverConfig.LambdaArn,
+		"readerMode":            resolverConfig.AccessConfig.ReaderMode,
+		"assumeRoleArn":         resolverConfig.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  resolverConfig.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": resolverConfig.AccessConfig.AssumeRoleSessionName,
+	}
+
+	var payload UserIdentityResolverConfigPayload
+
+	data, err := c.graphql(query, variables, "data.awsCreateUserIdentityResolverConfig")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &payload)
+	return &payload, err
+}
+
+func (c *ClientGraphql) UpdateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error) {
+	query := UpdateUserIdentityResolverConfig
+	variables := map[string]interface{}{
+		"id":                    resolverConfig.ID,
+		"lambdaArn":             resolverConfig.LambdaArn,
+		"readerMode":            resolverConfig.AccessConfig.ReaderMode,
+		"assumeRoleArn":         resolverConfig.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  resolverConfig.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": resolverConfig.AccessConfig.AssumeRoleSessionName,
+	}
+
+	var payload UserIdentityResolverConfigPayload
+
+	data, err := c.graphql(query, variables, "data.awsUpdateUserIdentityResolverConfig")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &payload)
+	return &payload, err
+}
+
+func (c *ClientGraphql) DeleteUserIdentityResolverConfig(id string) error {
+	var query = DeleteUserIdentityResolverConfig
+	variables := map[string]interface{}{
+		"id": id,
+	}
+
+	_, err := c.graphql(query, variables, "data.awsDeleteUserIdentityResolverConfig")
+	return err
+}
+
+func (c *ClientGraphql) GetIntegrationMeta() (*IntegrationMeta, error) {
+	var query = AwsIntegrationMeta
+	var meta IntegrationMeta
+	data, err := c.graphql(query, nil, "data.awsIntegrationMeta")
+	if err != nil {
+		return nil, err
+	}
+	mapstructure.Decode(data, &meta)
+	return &meta, err
 }
