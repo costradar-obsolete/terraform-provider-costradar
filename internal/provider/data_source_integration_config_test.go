@@ -7,10 +7,10 @@ import (
 	"testing"
 )
 
-func TestAccSubscriptionMeta(t *testing.T) {
+func TestAccIntegrationConfig(t *testing.T) {
 	os.Setenv("COSTRADAR_TOKEN", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
-	resourceName := "data.costradar_subscription_meta.test"
+	resourceName := "data.costradar_integration_config.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
 			"costradar": func() (*schema.Provider, error) {
@@ -19,7 +19,7 @@ func TestAccSubscriptionMeta(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSubscriptionMetaTF(),
+				Config: testAccDataIntegrationConfigTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "cur_sqs_arn", "arn:aws:sqs:eu-central-1:123456789012:cur_queue"),
 				),
@@ -28,8 +28,8 @@ func TestAccSubscriptionMeta(t *testing.T) {
 	})
 }
 
-func testAccDataSubscriptionMetaTF() string {
+func testAccDataIntegrationConfigTF() string {
 	return `
-	  data "costradar_subscription_meta" "test" {}
+	  data "costradar_integration_config" "test" {}
 	`
 }

@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     costradar = {
-      version = "0.1.4"
+      version = "0.1.6"
       source  = "localhost/local/costradar"
     }
   }
@@ -55,11 +55,11 @@ resource "costradar_identity_resolver" "this" {
   }
 }
 
-data "costradar_subscription_meta" "this" {}
+data "costradar_integration_config" "this" {}
 
-//output "test_output" {
-//  value = data.costradar_subscription_meta.this
-//}
+output "test_output" {
+  value = data.costradar_integration_config.this
+}
 
 output "costradar_user_identity_resolver_config" {
   value = costradar_identity_resolver.this

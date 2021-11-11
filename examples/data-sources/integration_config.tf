@@ -1,0 +1,1 @@
+data "costradar_integration_config" "this" {}
