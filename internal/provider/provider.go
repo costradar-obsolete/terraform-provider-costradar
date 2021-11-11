@@ -28,7 +28,7 @@ func Provider() *schema.Provider {
 			"costradar_identity_resolver":       resourceIdentityResolverConfig(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"costradar_subscription_meta": dataSourceSubscriptionMeta(),
+			"costradar_integration_config": dataSourceIntegrationConfig(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

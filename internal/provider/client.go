@@ -63,11 +63,13 @@ type CostAndUsageReportSubscriptionPayload struct {
 	Payload CostAndUsageReportSubscription `json:"payload"`
 }
 
-type IntegrationMeta struct {
-	CurSqsArn        string `json:"CurSqsArn"`
-	CurSqsUrl        string `json:"CurSqsUrl"`
-	CloudTrailSqsArn string `json:"CloudTrailSqsArn"`
-	CloudTrailSqsUrl string `json:"CloudTrailSqsUrl"`
+type IntegrationConfig struct {
+	IntegrationRoleArn string `json:"integrationRoleArn"`
+	IntegrationRoleExternalId string `json:"integrationRoleExternalId"`
+	CurSqsArn          string `json:"curSqsArn"`
+	CurSqsUrl          string `json:"curSqsUrl"`
+	CloudTrailSqsArn   string `json:"cloudtrailSqsArn"`
+	CloudTrailSqsUrl   string `json:"cloudtrailSqsUrl"`
 }
 
 type Client interface {
@@ -85,7 +87,7 @@ type Client interface {
 	CreateIdentityResolver(resolver IdentityResolver) error
 	UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error)
 	DeleteIdentityResolver() error
-	GetIntegrationMeta() (*IntegrationMeta, error)
+	GetIntegrationConfig() (*IntegrationConfig, error)
 }
 
 type ClientGraphql struct {
@@ -361,13 +363,13 @@ func (c *ClientGraphql) DeleteIdentityResolver() error {
 	return err
 }
 
-func (c *ClientGraphql) GetIntegrationMeta() (*IntegrationMeta, error) {
-	var query = AwsIntegrationMeta
-	var meta IntegrationMeta
-	data, err := c.graphql(query, nil, "data.awsIntegrationMeta")
+func (c *ClientGraphql) GetIntegrationConfig() (*IntegrationConfig, error) {
+	var query = AwsIntegrationConfig
+	var integrationConfig IntegrationConfig
+	data, err := c.graphql(query, nil, "data.awsIntegrationConfig")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &meta)
-	return &meta, err
+	mapstructure.Decode(data, &integrationConfig)
+	return &integrationConfig, err
 }

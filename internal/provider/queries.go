@@ -249,13 +249,15 @@ mutation($id: String!) {
 }
 `
 
-var AwsIntegrationMeta = `
-query{
-  awsIntegrationMeta {
-    CurSqsArn
-    CurSqsUrl
-    CloudTrailSqsArn
-    CloudTrailSqsUrl
+var AwsIntegrationConfig = `
+query {
+  awsIntegrationConfig {
+    integrationRoleArn
+    integrationRoleExternalId
+    curSqsArn
+    curSqsUrl
+    cloudtrailSqsArn
+    cloudtrailSqsUrl
   }
 }
 `

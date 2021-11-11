@@ -10,7 +10,11 @@ import (
 
 var integrationConfigSchema = map[string]*schema.Schema{
 	"integration_role_arn": {
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
+		Computed: true,
+	},
+	"integration_role_external_id": {
+		Type:     schema.TypeString,
 		Computed: true,
 	},
 	"cur_sqs_arn": {
@@ -52,6 +56,7 @@ func dataSourceIntegrationConfigRead(ctx context.Context, d *schema.ResourceData
 	d.Set("cloudtrail_sqs_arn", integrationConfig.CloudTrailSqsArn)
 	d.Set("cloudtrail_sqs_url", integrationConfig.CloudTrailSqsUrl)
 	d.Set("integration_role_arn", integrationConfig.IntegrationRoleArn)
+	d.Set("integration_role_external_id", integrationConfig.IntegrationRoleExternalId)
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	return diags
 }
