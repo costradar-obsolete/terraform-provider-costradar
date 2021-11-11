@@ -21,7 +21,7 @@ func TestAccSubscriptionMeta(t *testing.T) {
 			{
 				Config: testAccDataSubscriptionMetaTF(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceName, "cost_and_usage_report_sqs_arn", "arn:aws:sqs:eu-central-1:123456789012:cur_queue"),
+					resource.TestCheckResourceAttr(resourceName, "cur_sqs_arn", "arn:aws:sqs:eu-central-1:123456789012:cur_queue"),
 				),
 			},
 		},

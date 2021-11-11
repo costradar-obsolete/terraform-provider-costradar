@@ -67,8 +67,8 @@ type CostAndUsageReportSubscriptionPayload struct {
 type IntegrationMeta struct {
 	CostAndUsageReportSqsArn string `json:"CostAndUsageReportSqsArn"`
 	CostAndUsageReportSqsUrl string `json:"CostAndUsageReportSqsUrl"`
-	CloudTrailSqsArn         string `json:"CloudTrailSqsArn"`
-	CloudTrailSqsUrn         string `json:"CloudTrailSqsUrl"`
+	CloudTrailSqsArn string `json:"CloudTrailSqsArn"`
+	CloudTrailSqsUrl string `json:"CloudTrailSqsUrl"`
 }
 
 type Client interface {

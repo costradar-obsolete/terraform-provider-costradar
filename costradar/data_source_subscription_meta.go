@@ -9,19 +9,19 @@ import (
 )
 
 var subscriptionMetaSchema = map[string]*schema.Schema{
-	"cost_and_usage_report_sqs_arn": {
+	"cur_report_sqs_arn": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"cost_and_usage_report_sqs_url": {
+	"cur_report_sqs_url": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"cloud_trail_sqs_arn": {
+	"cloudtrail_sqs_arn": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"cloud_trail_sqs_url": {
+	"cloudtrail_sqs_url": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
@@ -43,10 +43,10 @@ func dataSourceSubscriptionMetaRead(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Set("cost_and_usage_report_sqs_arn", subscriptionMeta.CostAndUsageReportSqsArn)
-	d.Set("cost_and_usage_report_sqs_url", subscriptionMeta.CostAndUsageReportSqsUrl)
-	d.Set("cloud_trail_sqs_arn", subscriptionMeta.CostAndUsageReportSqsArn)
-	d.Set("cloud_trail_sqs_url", subscriptionMeta.CostAndUsageReportSqsUrl)
+	d.Set("cur_sqs_arn", subscriptionMeta.CostAndUsageReportSqsArn)
+	d.Set("cur_sqs_url", subscriptionMeta.CostAndUsageReportSqsUrl)
+	d.Set("cloudtrail_sqs_arn", subscriptionMeta.CloudTrailSqsArn)
+	d.Set("cloudtrail_sqs_url", subscriptionMeta.CloudTrailSqsUrl)
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	return diags
 }
