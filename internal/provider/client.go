@@ -26,8 +26,8 @@ type CostAndUsageReportSubscription struct {
 	BucketRegion     string       `json:"bucketRegion"`
 	BucketPathPrefix string       `json:"bucketPathPrefix"`
 	TimeUnit         string       `json:"timeUnit"`
-	SourceTopicArn string       `json:"sourceTopicArn"`
-	AccessConfig   AccessConfig `json:"accessConfig"`
+	SourceTopicArn   string       `json:"sourceTopicArn"`
+	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
 type CloudTrailSubscription struct {
@@ -36,18 +36,17 @@ type CloudTrailSubscription struct {
 	BucketName       string       `json:"bucketName"`
 	BucketRegion     string       `json:"bucketRegion"`
 	BucketPathPrefix string       `json:"bucketPathPrefix"`
-	SourceTopicArn string       `json:"sourceTopicArn"`
-	AccessConfig   AccessConfig `json:"accessConfig"`
+	SourceTopicArn   string       `json:"sourceTopicArn"`
+	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
 type IdentityResolver struct {
-	ID           string       `json:"id"`
 	LambdaArn    string       `json:"lambdaArn"`
 	AccessConfig AccessConfig `json:"accessConfig"`
 }
 
 type IdentityResolverPayload struct {
-	Status  bool                  `json:"status"`
+	Status  bool             `json:"status"`
 	Error   bool             `json:"error"`
 	Payload IdentityResolver `json:"payload"`
 }
@@ -82,10 +81,10 @@ type Client interface {
 	UpdateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
 	DeleteCloudTrailSubscription(id string) error
 
-	GetIdentityResolver(id string) (*IdentityResolverPayload, error)
-	CreateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error)
+	GetIdentityResolver() (*IdentityResolverPayload, error)
+	CreateIdentityResolver(resolver IdentityResolver) error
 	UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error)
-	DeleteIdentityResolver(id string) error
+	DeleteIdentityResolver() error
 	GetIntegrationMeta() (*IntegrationMeta, error)
 }
 
@@ -304,15 +303,12 @@ func (c *ClientGraphql) DeleteCloudTrailSubscription(id string) error {
 	return err
 }
 
-func (c *ClientGraphql) GetIdentityResolver(id string) (*IdentityResolverPayload, error) {
+func (c *ClientGraphql) GetIdentityResolver() (*IdentityResolverPayload, error) {
 	query := GetIdentityResolver
 
-	variables := map[string]interface{}{
-		"id": id,
-	}
 	resolver := IdentityResolver{}
 
-	data, err := c.graphql(query, variables, "data.awsIdentityResolver")
+	data, err := c.graphql(query, nil, "data.awsIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
@@ -324,10 +320,9 @@ func (c *ClientGraphql) GetIdentityResolver(id string) (*IdentityResolverPayload
 	return &payload, err
 }
 
-func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error) {
+func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) error {
 	query := CreateIdentityResolver
 	variables := map[string]interface{}{
-		"id":                    resolver.ID,
 		"lambdaArn":             resolver.LambdaArn,
 		"readerMode":            resolver.AccessConfig.ReaderMode,
 		"assumeRoleArn":         resolver.AccessConfig.AssumeRoleArn,
@@ -335,20 +330,13 @@ func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) (*Iden
 		"assumeRoleSessionName": resolver.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload IdentityResolverPayload
-
-	data, err := c.graphql(query, variables, "data.awsCreateIdentityResolver")
-	if err != nil {
-		return nil, err
-	}
-	mapstructure.Decode(data, &payload)
-	return &payload, err
+	_, err := c.graphql(query, variables, "data.awsCreateIdentityResolver")
+	return err
 }
 
 func (c *ClientGraphql) UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error) {
 	query := UpdateIdentityResolver
 	variables := map[string]interface{}{
-		"id":                    resolver.ID,
 		"lambdaArn":             resolver.LambdaArn,
 		"readerMode":            resolver.AccessConfig.ReaderMode,
 		"assumeRoleArn":         resolver.AccessConfig.AssumeRoleArn,
@@ -366,13 +354,10 @@ func (c *ClientGraphql) UpdateIdentityResolver(resolver IdentityResolver) (*Iden
 	return &payload, err
 }
 
-func (c *ClientGraphql) DeleteIdentityResolver(id string) error {
+func (c *ClientGraphql) DeleteIdentityResolver() error {
 	var query = DeleteIdentityResolver
-	variables := map[string]interface{}{
-		"id": id,
-	}
 
-	_, err := c.graphql(query, variables, "data.awsDeleteIdentityResolver")
+	_, err := c.graphql(query, nil, "data.awsDeleteIdentityResolver")
 	return err
 }
 

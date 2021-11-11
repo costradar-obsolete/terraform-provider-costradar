@@ -3,6 +3,8 @@ package provider
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"strconv"
+	"time"
 )
 
 import (
@@ -10,10 +12,6 @@ import (
 )
 
 var resourceIdentityResolverConfigSchema = map[string]*schema.Schema{
-	"id": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
 	"lambda_arn": {
 		Type:     schema.TypeString,
 		Required: true,
@@ -75,7 +73,6 @@ func identityResolverFromResourceData(d *schema.ResourceData) IdentityResolver {
 		accessConfig.AssumeRoleSessionName = v
 	}
 	resolver := IdentityResolver{
-		ID:           d.Get("id").(string),
 		LambdaArn:    d.Get("lambda_arn").(string),
 		AccessConfig: accessConfig,
 	}
@@ -102,11 +99,11 @@ func resourceIdentityResolverCreate(ctx context.Context, d *schema.ResourceData,
 
 	var resolverConfig = identityResolverFromResourceData(d)
 
-	s, err := c.CreateIdentityResolver(resolverConfig)
+	err := c.CreateIdentityResolver(resolverConfig)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(s.Payload.ID)
+	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	resourceIdentityResolverRead(ctx, d, m)
 
 	return diags
@@ -117,8 +114,7 @@ func resourceIdentityResolverRead(ctx context.Context, d *schema.ResourceData, m
 
 	var diags diag.Diagnostics
 
-	resolverConfigId := d.Id()
-	resolverConfig, err := c.GetIdentityResolver(resolverConfigId)
+	resolverConfig, err := c.GetIdentityResolver()
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -140,9 +136,7 @@ func resourceIdentityResolverDelete(ctx context.Context, d *schema.ResourceData,
 	c := m.(Client)
 	var diags diag.Diagnostics
 
-	resolverConfigId := d.Id()
-
-	err := c.DeleteIdentityResolver(resolverConfigId)
+	err := c.DeleteIdentityResolver()
 	if err != nil {
 		return diag.FromErr(err)
 	}

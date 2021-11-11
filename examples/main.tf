@@ -1,14 +1,14 @@
 terraform {
   required_providers {
     costradar = {
-      version = "0.2.1"
+      version = "0.1.4"
       source  = "localhost/local/costradar"
     }
   }
 }
 
 provider "costradar" {
-  token   = "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8"
+  token    = "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8"
   endpoint = "http://localhost:8000/graphql"
 }
 
@@ -19,7 +19,7 @@ resource "costradar_cur_subscription" "test" {
   bucket_path_prefix = "prefix"
   time_unit          = "hour"
 
-  source_topic_arn   = "arn:aws:sns:eu-central-1:123456789012:cur"
+  source_topic_arn = "arn:aws:sns:eu-central-1:123456789012:cur"
 
   access_config {
     reader_mode              = "direct"
@@ -35,7 +35,7 @@ resource "costradar_cloudtrail_subscription" "test" {
   bucket_region      = "eu-central-1"
   bucket_path_prefix = "prefix"
 
-  source_topic_arn   = "arn:aws:sns:eu-central-1:123456789012:cloudtrail"
+  source_topic_arn = "arn:aws:sns:eu-central-1:123456789012:cloudtrail"
 
   access_config {
     reader_mode              = "direct"
@@ -45,7 +45,7 @@ resource "costradar_cloudtrail_subscription" "test" {
   }
 }
 
-resource "costradar_user_identity_resolver_config" "this" {
+resource "costradar_identity_resolver" "this" {
   lambda_arn = "123:xxx:yyy"
   access_config {
     reader_mode              = "direct"
@@ -57,12 +57,12 @@ resource "costradar_user_identity_resolver_config" "this" {
 
 data "costradar_subscription_meta" "this" {}
 
-output "test_output" {
-  value = data.costradar_subscription_meta.this
-}
+//output "test_output" {
+//  value = data.costradar_subscription_meta.this
+//}
 
 output "costradar_user_identity_resolver_config" {
-  value = costradar_user_identity_resolver_config.this
+  value = costradar_identity_resolver.this
 }
 
 output "cur_subscription" {

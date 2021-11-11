@@ -13,7 +13,7 @@ func TestAccSubscriptionMeta(t *testing.T) {
 	resourceName := "data.costradar_subscription_meta.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
-			"provider": func() (*schema.Provider, error) {
+			"costradar": func() (*schema.Provider, error) {
 				return Provider(), nil
 			},
 		},

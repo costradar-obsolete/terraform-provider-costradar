@@ -1,1 +1,1 @@
-data costradar_subscription_meta this {}
+data "costradar_subscription_meta" "this" {}

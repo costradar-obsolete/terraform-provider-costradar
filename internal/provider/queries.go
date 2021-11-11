@@ -261,9 +261,8 @@ query{
 `
 
 var GetIdentityResolver = `
-query ($id: String!) {
-  	awsUserIdentityResolverConfig(id: $id){
-		id
+query {
+  	awsIdentityResolver{
 		lambdaArn
 		accessConfig {
 			readerMode
@@ -282,7 +281,7 @@ mutation (
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsCreateUserIdentityResolverConfig(input:{
+	awsCreateIdentityResolver(input:{
 		lambdaArn: $lambdaArn,
 		accessConfig:{
 			readerMode: $readerMode,
@@ -294,7 +293,6 @@ mutation (
 		status
 		error
 		payload {
-			id
 			lambdaArn
 			accessConfig {
 				readerMode
@@ -308,14 +306,13 @@ mutation (
 
 var UpdateIdentityResolver = `
 mutation (
-	$id: String!
 	$lambdaArn: String!
 	$readerMode: ReaderMode!
 	$assumeRoleArn: String
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsUpdateUserIdentityResolverConfig(resolverConfigId: $id, input:{
+	awsUpdateIdentityResolver(input:{
 		lambdaArn: $lambdaArn,
 		accessConfig:{
 			readerMode: $readerMode,
@@ -327,7 +324,6 @@ mutation (
 		status
 		error
 		payload {
-			id
 			lambdaArn
 			accessConfig {
 				readerMode
@@ -340,11 +336,13 @@ mutation (
 }`
 
 var DeleteIdentityResolver = `
-mutation($id: String!) {
-	awsDeleteUserIdentityResolverConfig(resolverConfigId: $id) {
-	status
-	error
-	payload {
-		id
-	}}
+mutation{
+	awsDeleteIdentityResolver {
+		status
+		error
+	}
 }`
+
+//payload {
+//lambdaArn
+//}

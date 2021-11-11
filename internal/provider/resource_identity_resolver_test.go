@@ -14,7 +14,7 @@ func TestAccIdentityResolverConfig(t *testing.T) {
 	resourceName := "costradar_identity_resolver.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
-			"provider": func() (*schema.Provider, error) {
+			"costradar": func() (*schema.Provider, error) {
 				return Provider(), nil
 			},
 		},

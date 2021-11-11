@@ -1,3 +1,3 @@
 provider "costradar" {
-# example configuration here
+  # example configuration here
 }
