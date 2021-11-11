@@ -195,6 +195,7 @@ mutation (
 
 var UpdateCloudTrailSubscriptionQuery = `
 mutation (
+	$id: String!
 	$trailName: String!
 	$bucketName: String!
 	$bucketRegion: String!
