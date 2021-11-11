@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	//"fmt"
@@ -16,7 +16,7 @@ func TestAccCurSubscription(t *testing.T) {
 		//PreCheck:   func() { testAccPreCheck(t) },
 		//ErrorCheck: testAccErrorCheck(t, ec2.EndpointsID),
 		ProviderFactories: map[string]func() (*schema.Provider, error){
-			"costradar": func() (*schema.Provider, error) {
+			"provider": func() (*schema.Provider, error) {
 				return Provider(), nil
 			},
 		},
@@ -25,7 +25,7 @@ func TestAccCurSubscription(t *testing.T) {
 				Config: testAccCurSubscriptionTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "report_name", "report_name"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-costradar-bucket"),
+					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-provider-bucket"),
 					resource.TestCheckResourceAttr(resourceName, "bucket_region", "bucket_region"),
 					resource.TestCheckResourceAttr(resourceName, "bucket_path_prefix", "xxx!!"),
 					resource.TestCheckResourceAttr(resourceName, "time_unit", "hour"),
@@ -43,7 +43,7 @@ func testAccCurSubscriptionTF() string {
 	return `
 	  resource "costradar_cur_subscription" "test" {
 	  	report_name        = "report_name"
-	  	bucket_name        = "test-costradar-bucket"
+	  	bucket_name        = "test-provider-bucket"
 	  	bucket_region      = "bucket_region"
 	  	bucket_path_prefix = "xxx!!"
 	  	time_unit          = "hour"

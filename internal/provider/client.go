@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	"bytes"
@@ -26,8 +26,8 @@ type CostAndUsageReportSubscription struct {
 	BucketRegion     string       `json:"bucketRegion"`
 	BucketPathPrefix string       `json:"bucketPathPrefix"`
 	TimeUnit         string       `json:"timeUnit"`
-	SourceTopicArn   string       `json:"sourceTopicArn"`
-	AccessConfig     AccessConfig `json:"accessConfig"`
+	SourceTopicArn string       `json:"sourceTopicArn"`
+	AccessConfig   AccessConfig `json:"accessConfig"`
 }
 
 type CloudTrailSubscription struct {
@@ -36,8 +36,8 @@ type CloudTrailSubscription struct {
 	BucketName       string       `json:"bucketName"`
 	BucketRegion     string       `json:"bucketRegion"`
 	BucketPathPrefix string       `json:"bucketPathPrefix"`
-	SourceTopicArn   string       `json:"sourceTopicArn"`
-	AccessConfig     AccessConfig `json:"accessConfig"`
+	SourceTopicArn string       `json:"sourceTopicArn"`
+	AccessConfig   AccessConfig `json:"accessConfig"`
 }
 
 type IdentityResolver struct {

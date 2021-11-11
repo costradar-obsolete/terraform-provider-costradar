@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	"testing"

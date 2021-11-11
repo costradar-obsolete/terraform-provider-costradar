@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 var GetCostAndUsageReportSubscriptionQuery = `
 query ($id: String!) {

@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"

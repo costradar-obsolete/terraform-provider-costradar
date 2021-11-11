@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"costradar_cur_subscription":        resourceCurSubscription(),
 			"costradar_cloudtrail_subscription": resourceCloudTrailSubscription(),
-			"costradar_identity_resolver":  resourceIdentityResolverConfig(),
+			"costradar_identity_resolver":       resourceIdentityResolverConfig(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"costradar_subscription_meta": dataSourceSubscriptionMeta(),

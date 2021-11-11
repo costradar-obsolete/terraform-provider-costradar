@@ -1,4 +1,4 @@
-package costradar
+package provider
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -13,7 +13,7 @@ func TestAccCloudTrailSubscription(t *testing.T) {
 	resourceName := "costradar_cloudtrail_subscription.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
-			"costradar": func() (*schema.Provider, error) {
+			"provider": func() (*schema.Provider, error) {
 				return Provider(), nil
 			},
 		},
@@ -22,7 +22,7 @@ func TestAccCloudTrailSubscription(t *testing.T) {
 				Config: testAccCloudTrailSubscriptionTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "trail_name", "trail-name"),
-					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-costradar-bucket"),
+					resource.TestCheckResourceAttr(resourceName, "bucket_name", "test-provider-bucket"),
 					resource.TestCheckResourceAttr(resourceName, "source_topic_arn", "topic-arn"),
 				),
 			},
@@ -34,7 +34,7 @@ func testAccCloudTrailSubscriptionTF() string {
 	return `
 	  resource "costradar_cloudtrail_subscription" "test" {
 		  trail_name         = "trail-name"
-		  bucket_name        = "test-costradar-bucket"
+		  bucket_name        = "test-provider-bucket"
 		  bucket_region      = "region"
 		  bucket_path_prefix = "prefix"
           source_topic_arn   = "topic-arn"
