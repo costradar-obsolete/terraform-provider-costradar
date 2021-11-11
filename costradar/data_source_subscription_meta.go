@@ -9,11 +9,11 @@ import (
 )
 
 var subscriptionMetaSchema = map[string]*schema.Schema{
-	"cur_report_sqs_arn": {
+	"cur_sqs_arn": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"cur_report_sqs_url": {
+	"cur_sqs_url": {
 		Type:     schema.TypeString,
 		Computed: true,
 	},
@@ -43,8 +43,8 @@ func dataSourceSubscriptionMetaRead(ctx context.Context, d *schema.ResourceData,
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Set("cur_sqs_arn", subscriptionMeta.CostAndUsageReportSqsArn)
-	d.Set("cur_sqs_url", subscriptionMeta.CostAndUsageReportSqsUrl)
+	d.Set("cur_sqs_arn", subscriptionMeta.CurSqsArn)
+	d.Set("cur_sqs_url", subscriptionMeta.CurSqsUrl)
 	d.Set("cloudtrail_sqs_arn", subscriptionMeta.CloudTrailSqsArn)
 	d.Set("cloudtrail_sqs_url", subscriptionMeta.CloudTrailSqsUrl)
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))

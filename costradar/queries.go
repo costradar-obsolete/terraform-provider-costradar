@@ -252,15 +252,15 @@ mutation($id: String!) {
 var AwsIntegrationMeta = `
 query{
   awsIntegrationMeta {
-    CostAndUsageReportSqsArn
-    CostAndUsageReportSqsUrl
+    CurSqsArn
+    CurSqsUrl
     CloudTrailSqsArn
     CloudTrailSqsUrl
   }
 }
 `
 
-var GetUserIdentityResolverConfig = `
+var GetIdentityResolver = `
 query ($id: String!) {
   	awsUserIdentityResolverConfig(id: $id){
 		id
@@ -274,7 +274,7 @@ query ($id: String!) {
   	}
 }`
 
-var CreateUserIdentityResolverConfig = `
+var CreateIdentityResolver = `
 mutation (
 	$lambdaArn: String!
 	$readerMode: ReaderMode!
@@ -306,7 +306,7 @@ mutation (
 	}
 }`
 
-var UpdateUserIdentityResolverConfig = `
+var UpdateIdentityResolver = `
 mutation (
 	$id: String!
 	$lambdaArn: String!
@@ -339,7 +339,7 @@ mutation (
 	}
 }`
 
-var DeleteUserIdentityResolverConfig = `
+var DeleteIdentityResolver = `
 mutation($id: String!) {
 	awsDeleteUserIdentityResolverConfig(resolverConfigId: $id) {
 	status

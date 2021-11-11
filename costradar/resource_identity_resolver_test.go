@@ -8,10 +8,10 @@ import (
 	"testing"
 )
 
-func TestAccUserIdentityResolverConfig(t *testing.T) {
+func TestAccIdentityResolverConfig(t *testing.T) {
 	os.Setenv("COSTRADAR_TOKEN", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
-	resourceName := "costradar_user_identity_resolver_config.test"
+	resourceName := "costradar_identity_resolver.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
 			"costradar": func() (*schema.Provider, error) {
@@ -20,7 +20,7 @@ func TestAccUserIdentityResolverConfig(t *testing.T) {
 		},
 		Steps: []resource.TestStep{
 			{
-				Config: testAccUserIdentityResolverConfigTF(),
+				Config: testAccIdentityResolverConfigTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "lambda_arn", "123:xxx:yyy"),
 					resource.TestCheckResourceAttr(resourceName, "access_config.0.reader_mode", "direct"),
@@ -33,9 +33,9 @@ func TestAccUserIdentityResolverConfig(t *testing.T) {
 	})
 }
 
-func testAccUserIdentityResolverConfigTF() string {
+func testAccIdentityResolverConfigTF() string {
 	return `
-	  resource "costradar_user_identity_resolver_config" "test" {
+	  resource "costradar_identity_resolver" "test" {
 	  	lambda_arn = "123:xxx:yyy"
 	  	access_config {
 		  reader_mode              = "direct"

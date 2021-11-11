@@ -40,16 +40,16 @@ type CloudTrailSubscription struct {
 	AccessConfig     AccessConfig `json:"accessConfig"`
 }
 
-type UserIdentityResolverConfig struct {
+type IdentityResolver struct {
 	ID           string       `json:"id"`
 	LambdaArn    string       `json:"lambdaArn"`
 	AccessConfig AccessConfig `json:"accessConfig"`
 }
 
-type UserIdentityResolverConfigPayload struct {
-	Status  bool                       `json:"status"`
-	Error   bool                       `json:"error"`
-	Payload UserIdentityResolverConfig `json:"payload"`
+type IdentityResolverPayload struct {
+	Status  bool                  `json:"status"`
+	Error   bool             `json:"error"`
+	Payload IdentityResolver `json:"payload"`
 }
 
 type CloudTrailSubscriptionPayload struct {
@@ -65,8 +65,8 @@ type CostAndUsageReportSubscriptionPayload struct {
 }
 
 type IntegrationMeta struct {
-	CostAndUsageReportSqsArn string `json:"CostAndUsageReportSqsArn"`
-	CostAndUsageReportSqsUrl string `json:"CostAndUsageReportSqsUrl"`
+	CurSqsArn        string `json:"CurSqsArn"`
+	CurSqsUrl        string `json:"CurSqsUrl"`
 	CloudTrailSqsArn string `json:"CloudTrailSqsArn"`
 	CloudTrailSqsUrl string `json:"CloudTrailSqsUrl"`
 }
@@ -82,10 +82,10 @@ type Client interface {
 	UpdateCloudTrailSubscription(subscription CloudTrailSubscription) (*CloudTrailSubscriptionPayload, error)
 	DeleteCloudTrailSubscription(id string) error
 
-	GetUserIdentityResolverConfig(id string) (*UserIdentityResolverConfigPayload, error)
-	CreateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error)
-	UpdateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error)
-	DeleteUserIdentityResolverConfig(id string) error
+	GetIdentityResolver(id string) (*IdentityResolverPayload, error)
+	CreateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error)
+	UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error)
+	DeleteIdentityResolver(id string) error
 	GetIntegrationMeta() (*IntegrationMeta, error)
 }
 
@@ -304,40 +304,40 @@ func (c *ClientGraphql) DeleteCloudTrailSubscription(id string) error {
 	return err
 }
 
-func (c *ClientGraphql) GetUserIdentityResolverConfig(id string) (*UserIdentityResolverConfigPayload, error) {
-	query := GetUserIdentityResolverConfig
+func (c *ClientGraphql) GetIdentityResolver(id string) (*IdentityResolverPayload, error) {
+	query := GetIdentityResolver
 
 	variables := map[string]interface{}{
 		"id": id,
 	}
-	resolverConfig := UserIdentityResolverConfig{}
+	resolver := IdentityResolver{}
 
-	data, err := c.graphql(query, variables, "data.awsUserIdentityResolverConfig")
+	data, err := c.graphql(query, variables, "data.awsIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
 
-	mapstructure.Decode(data, &resolverConfig)
-	payload := UserIdentityResolverConfigPayload{
-		Payload: resolverConfig,
+	mapstructure.Decode(data, &resolver)
+	payload := IdentityResolverPayload{
+		Payload: resolver,
 	}
 	return &payload, err
 }
 
-func (c *ClientGraphql) CreateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error) {
-	query := CreateUserIdentityResolverConfig
+func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error) {
+	query := CreateIdentityResolver
 	variables := map[string]interface{}{
-		"id":                    resolverConfig.ID,
-		"lambdaArn":             resolverConfig.LambdaArn,
-		"readerMode":            resolverConfig.AccessConfig.ReaderMode,
-		"assumeRoleArn":         resolverConfig.AccessConfig.AssumeRoleArn,
-		"assumeRoleExternalId":  resolverConfig.AccessConfig.AssumeRoleExternalId,
-		"assumeRoleSessionName": resolverConfig.AccessConfig.AssumeRoleSessionName,
+		"id":                    resolver.ID,
+		"lambdaArn":             resolver.LambdaArn,
+		"readerMode":            resolver.AccessConfig.ReaderMode,
+		"assumeRoleArn":         resolver.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  resolver.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": resolver.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload UserIdentityResolverConfigPayload
+	var payload IdentityResolverPayload
 
-	data, err := c.graphql(query, variables, "data.awsCreateUserIdentityResolverConfig")
+	data, err := c.graphql(query, variables, "data.awsCreateIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
@@ -345,20 +345,20 @@ func (c *ClientGraphql) CreateUserIdentityResolverConfig(resolverConfig UserIden
 	return &payload, err
 }
 
-func (c *ClientGraphql) UpdateUserIdentityResolverConfig(resolverConfig UserIdentityResolverConfig) (*UserIdentityResolverConfigPayload, error) {
-	query := UpdateUserIdentityResolverConfig
+func (c *ClientGraphql) UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error) {
+	query := UpdateIdentityResolver
 	variables := map[string]interface{}{
-		"id":                    resolverConfig.ID,
-		"lambdaArn":             resolverConfig.LambdaArn,
-		"readerMode":            resolverConfig.AccessConfig.ReaderMode,
-		"assumeRoleArn":         resolverConfig.AccessConfig.AssumeRoleArn,
-		"assumeRoleExternalId":  resolverConfig.AccessConfig.AssumeRoleExternalId,
-		"assumeRoleSessionName": resolverConfig.AccessConfig.AssumeRoleSessionName,
+		"id":                    resolver.ID,
+		"lambdaArn":             resolver.LambdaArn,
+		"readerMode":            resolver.AccessConfig.ReaderMode,
+		"assumeRoleArn":         resolver.AccessConfig.AssumeRoleArn,
+		"assumeRoleExternalId":  resolver.AccessConfig.AssumeRoleExternalId,
+		"assumeRoleSessionName": resolver.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload UserIdentityResolverConfigPayload
+	var payload IdentityResolverPayload
 
-	data, err := c.graphql(query, variables, "data.awsUpdateUserIdentityResolverConfig")
+	data, err := c.graphql(query, variables, "data.awsUpdateIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
@@ -366,13 +366,13 @@ func (c *ClientGraphql) UpdateUserIdentityResolverConfig(resolverConfig UserIden
 	return &payload, err
 }
 
-func (c *ClientGraphql) DeleteUserIdentityResolverConfig(id string) error {
-	var query = DeleteUserIdentityResolverConfig
+func (c *ClientGraphql) DeleteIdentityResolver(id string) error {
+	var query = DeleteIdentityResolver
 	variables := map[string]interface{}{
 		"id": id,
 	}
 
-	_, err := c.graphql(query, variables, "data.awsDeleteUserIdentityResolverConfig")
+	_, err := c.graphql(query, variables, "data.awsDeleteIdentityResolver")
 	return err
 }
 

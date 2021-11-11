@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-var resourceUserIdentityResolverConfigSchema = map[string]*schema.Schema{
+var resourceIdentityResolverConfigSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,
@@ -46,20 +46,20 @@ var resourceUserIdentityResolverConfigSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceUserIdentityResolverConfig() *schema.Resource {
+func resourceIdentityResolverConfig() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceUserIdentityResolverConfigCreate,
-		ReadContext:   resourceUserIdentityResolverConfigRead,
-		UpdateContext: resourceUserIdentityResolverConfigUpdate,
-		DeleteContext: resourceUserIdentityResolverConfigDelete,
+		CreateContext: resourceIdentityResolverCreate,
+		ReadContext:   resourceIdentityResolverRead,
+		UpdateContext: resourceIdentityResolverUpdate,
+		DeleteContext: resourceIdentityResolverDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema: resourceUserIdentityResolverConfigSchema,
+		Schema: resourceIdentityResolverConfigSchema,
 	}
 }
 
-func userIdentityResolverConfigFromResourceData(d *schema.ResourceData) UserIdentityResolverConfig {
+func identityResolverFromResourceData(d *schema.ResourceData) IdentityResolver {
 	var accessConfig AccessConfig
 	accessConfigData := d.Get("access_config.0").(map[string]interface{})
 	if v, ok := accessConfigData["reader_mode"].(string); ok {
@@ -74,16 +74,16 @@ func userIdentityResolverConfigFromResourceData(d *schema.ResourceData) UserIden
 	if v, ok := accessConfigData["assume_role_session_name"].(string); ok {
 		accessConfig.AssumeRoleSessionName = v
 	}
-	resolverConfig := UserIdentityResolverConfig{
+	resolver := IdentityResolver{
 		ID:           d.Get("id").(string),
 		LambdaArn:    d.Get("lambda_arn").(string),
 		AccessConfig: accessConfig,
 	}
 
-	return resolverConfig
+	return resolver
 }
 
-func userIdentityResolverToResourceData(d *schema.ResourceData, rc UserIdentityResolverConfig) {
+func identityResolverToResourceData(d *schema.ResourceData, rc IdentityResolver) {
 	var accessConfigList []map[string]string
 	accessConfig := make(map[string]string)
 	accessConfig["reader_mode"] = rc.AccessConfig.ReaderMode
@@ -95,54 +95,54 @@ func userIdentityResolverToResourceData(d *schema.ResourceData, rc UserIdentityR
 	d.Set("access_config", accessConfigList)
 }
 
-func resourceUserIdentityResolverConfigCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceIdentityResolverCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
-	var resolverConfig = userIdentityResolverConfigFromResourceData(d)
+	var resolverConfig = identityResolverFromResourceData(d)
 
-	s, err := c.CreateUserIdentityResolverConfig(resolverConfig)
+	s, err := c.CreateIdentityResolver(resolverConfig)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(s.Payload.ID)
-	resourceUserIdentityResolverConfigRead(ctx, d, m)
+	resourceIdentityResolverRead(ctx, d, m)
 
 	return diags
 }
 
-func resourceUserIdentityResolverConfigRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceIdentityResolverRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
 	resolverConfigId := d.Id()
-	resolverConfig, err := c.GetUserIdentityResolverConfig(resolverConfigId)
+	resolverConfig, err := c.GetIdentityResolver(resolverConfigId)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	userIdentityResolverToResourceData(d, resolverConfig.Payload)
+	identityResolverToResourceData(d, resolverConfig.Payload)
 	return diags
 }
 
-func resourceUserIdentityResolverConfigUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	resolverConfig := userIdentityResolverConfigFromResourceData(d)
+func resourceIdentityResolverUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	resolverConfig := identityResolverFromResourceData(d)
 	c := m.(Client)
-	_, err := c.UpdateUserIdentityResolverConfig(resolverConfig)
+	_, err := c.UpdateIdentityResolver(resolverConfig)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	return resourceUserIdentityResolverConfigRead(ctx, d, m)
+	return resourceIdentityResolverRead(ctx, d, m)
 }
 
-func resourceUserIdentityResolverConfigDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceIdentityResolverDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 	var diags diag.Diagnostics
 
 	resolverConfigId := d.Id()
 
-	err := c.DeleteUserIdentityResolverConfig(resolverConfigId)
+	err := c.DeleteIdentityResolver(resolverConfigId)
 	if err != nil {
 		return diag.FromErr(err)
 	}
