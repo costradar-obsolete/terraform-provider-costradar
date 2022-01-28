@@ -8,7 +8,7 @@ import (
 )
 
 func TestAccIntegrationConfig(t *testing.T) {
-	os.Setenv("COSTRADAR_TOKEN", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
+	os.Setenv("COSTRADAR_TOKEN", "api_xyz_costradar")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
 	resourceName := "data.costradar_integration_config.test"
 	resource.Test(t, resource.TestCase{

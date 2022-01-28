@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -27,6 +26,7 @@ var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
 	"bucket_path_prefix": {
 		Type:     schema.TypeString,
 		Optional: true,
+		Default: "",
 	},
 	"source_topic_arn": {
 		Type:     schema.TypeString,
@@ -94,11 +94,13 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 		TrailName:        d.Get("trail_name").(string),
 		BucketName:       d.Get("bucket_name").(string),
 		BucketRegion:     d.Get("bucket_region").(string),
-		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
 		SourceTopicArn:   d.Get("source_topic_arn").(string),
 		AccessConfig:     accessConfig,
 	}
 
+	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != "" {
+		sub.BucketPathPrefix = v.(string)
+	}
 	return sub
 }
 
@@ -113,7 +115,9 @@ func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSu
 	d.Set("trail_name", s.TrailName)
 	d.Set("bucket_name", s.BucketName)
 	d.Set("bucket_region", s.BucketRegion)
-	d.Set("bucket_path_prefix", s.BucketPathPrefix)
+	if s.BucketPathPrefix != "" {
+		d.Set("bucket_path_prefix", s.BucketPathPrefix)
+	}
 	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("access_config", accessConfigList)
 }

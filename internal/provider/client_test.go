@@ -14,7 +14,7 @@ var _ = Describe("Costradar http client", func() {
 
 	BeforeEach(func() {
 		server = ghttp.NewServer()
-		costradarClient = NewCostRadarClient(server.URL()+"/graphql", "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8")
+		costradarClient = NewCostRadarClient(server.URL()+"/graphql", "api_xyz_costradar")
 	})
 
 	AfterEach(func() {
@@ -247,9 +247,9 @@ func createCostAndUsageReportSubscriptionSuccess() string {
 		{
 		  "data": {
 			"awsCreateCurSubscription": {
-			  "status": true,
+			  "success": true,
 			  "error": null,
-			  "payload": {
+			  "result": {
 				"id": "61489a2c151407505898f1a5",
 				"reportName": "SomeName",
 				"bucketName": "bucketName",
@@ -273,9 +273,9 @@ func updateCostAndUsageReportSubscriptionSuccess() string {
 	return fmt.Sprintf(`{
 	  "data": {
 		"awsUpdateCurSubscription": {
-		  "status": true,
+		  "success": true,
 		  "error": null,
-		  "payload": {
+		  "result": {
 			"id": "61487ac0151407505898f1a3",
 			"reportName": "report",
 			"bucketName": "bucket",
@@ -335,8 +335,8 @@ func deleteCostAndUsageReportSubscriptionSuccess() string {
 	  "data": {
 		"awsDeleteCurSubscription": {
 		  "error": null,
-		  "payload": null,
-		  "status": true
+		  "result": null,
+		  "success": true
 		}
 	  }
 	}`)
@@ -347,8 +347,8 @@ func deleteCostAndUsageReportSubscriptionNotFound() string {
 	  "data": {
 		"awsDeleteCurSubscription": {
 		  "error": "CUR subscription not found.",
-		  "payload": null,
-		  "status": false
+		  "result": null,
+		  "success": false
 		}
 	  }
 	}`)
@@ -379,9 +379,9 @@ func createCloudTrailSubscriptionSuccess() string {
 	return fmt.Sprintf(`{
 	  "data": {
 		"awsCreateCloudTrailSubscription": {
-		  "status": true,
+		  "success": true,
 		  "error": null,
-		  "payload": {
+		  "result": {
 			"id": "614ae6fc151407505898f1af",
 			"sourceTopicArn": "topic-arn",
             "trailName": "trail",
@@ -404,9 +404,9 @@ func updateCloudTrailSubscriptionSuccess() string {
 	return fmt.Sprintf(`{
 	  "data": {
 		"awsUpdateCloudTrailSubscription": {
-		  "status": true,
+		  "success": true,
 		  "error": null,
-		  "payload": {
+		  "result": {
 			"id": "614ae6fc151407505898f1af",
 			"sourceTopicArn": "topic-arn-u",
 		    "trailName": "trail-u",
@@ -430,8 +430,8 @@ func deleteCloudTrailSubscriptionSuccess() string {
 	  "data": {
 		"awsDeleteCloudTrailSubscription": {
 		  "error": null,
-		  "payload": null,
-		  "status": true
+		  "result": null,
+		  "success": true
 		}
 	  }
 	}`)
@@ -442,8 +442,8 @@ func deleteCloudTrailSubscriptionNotFound() string {
 	  "data": {
 		"awsDeleteCloudTrailSubscription": {
 		  "error": "CloudTrail subscription not found.",
-		  "payload": null,
-		  "status": false
+		  "result": null,
+		  "success": false
 		}
 	  }
 	}`)

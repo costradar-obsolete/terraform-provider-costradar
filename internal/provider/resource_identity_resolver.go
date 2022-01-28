@@ -15,9 +15,11 @@ var resourceIdentityResolverConfigSchema = map[string]*schema.Schema{
 	"lambda_arn": {
 		Type:     schema.TypeString,
 		Required: true,
+		ForceNew: true,
 	},
 	"access_config": {
 		Type:     schema.TypeList,
+		ForceNew: true,
 		Required: true,
 		MinItems: 1,
 		MaxItems: 1,
@@ -48,7 +50,7 @@ func resourceIdentityResolverConfig() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceIdentityResolverCreate,
 		ReadContext:   resourceIdentityResolverRead,
-		UpdateContext: resourceIdentityResolverUpdate,
+		//UpdateContext: resourceIdentityResolverUpdate,
 		DeleteContext: resourceIdentityResolverDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -122,15 +124,15 @@ func resourceIdentityResolverRead(ctx context.Context, d *schema.ResourceData, m
 	return diags
 }
 
-func resourceIdentityResolverUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	resolverConfig := identityResolverFromResourceData(d)
-	c := m.(Client)
-	_, err := c.UpdateIdentityResolver(resolverConfig)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	return resourceIdentityResolverRead(ctx, d, m)
-}
+//func resourceIdentityResolverUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+//	resolverConfig := identityResolverFromResourceData(d)
+//	c := m.(Client)
+//	_, err := c.UpdateIdentityResolver(resolverConfig)
+//	if err != nil {
+//		return diag.FromErr(err)
+//	}
+//	return resourceIdentityResolverRead(ctx, d, m)
+//}
 
 func resourceIdentityResolverDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)

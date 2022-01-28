@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/mitchellh/mapstructure"
 	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"net/http"
@@ -46,30 +45,30 @@ type IdentityResolver struct {
 }
 
 type IdentityResolverPayload struct {
-	Status  bool             `json:"status"`
+	Status  bool             `json:"success"`
 	Error   bool             `json:"error"`
-	Payload IdentityResolver `json:"payload"`
+	Payload IdentityResolver `json:"result"`
 }
 
 type CloudTrailSubscriptionPayload struct {
-	Status  bool                   `json:"status"`
+	Status  bool                   `json:"success"`
 	Error   string                 `json:"error"`
-	Payload CloudTrailSubscription `json:"payload"`
+	Payload CloudTrailSubscription `json:"result"`
 }
 
 type CostAndUsageReportSubscriptionPayload struct {
-	Status  bool                           `json:"status"`
+	Status  bool                           `json:"success"`
 	Error   string                         `json:"error"`
-	Payload CostAndUsageReportSubscription `json:"payload"`
+	Payload CostAndUsageReportSubscription `json:"result"`
 }
 
 type IntegrationConfig struct {
-	IntegrationRoleArn string `json:"integrationRoleArn"`
+	IntegrationRoleArn        string `json:"integrationRoleArn"`
 	IntegrationRoleExternalId string `json:"integrationRoleExternalId"`
-	CurSqsArn          string `json:"curSqsArn"`
-	CurSqsUrl          string `json:"curSqsUrl"`
-	CloudTrailSqsArn   string `json:"cloudtrailSqsArn"`
-	CloudTrailSqsUrl   string `json:"cloudtrailSqsUrl"`
+	CurSqsArn                 string `json:"curSqsArn"`
+	CurSqsUrl                 string `json:"curSqsUrl"`
+	CloudTrailSqsArn          string `json:"cloudtrailSqsArn"`
+	CloudTrailSqsUrl          string `json:"cloudtrailSqsUrl"`
 }
 
 type Client interface {
@@ -104,7 +103,7 @@ func NewCostRadarClient(endpoint, token string) Client {
 	}
 }
 
-func (c *ClientGraphql) graphql(query string, variables map[string]interface{}, dataPath string) (data interface{}, err error) {
+func (c *ClientGraphql) graphql(query string, variables map[string]interface{}, dataPath string) (data []byte, err error) {
 
 	payload := new(bytes.Buffer)
 
@@ -134,8 +133,7 @@ func (c *ClientGraphql) graphql(query string, variables map[string]interface{}, 
 	if errorMessage != "" {
 		return nil, errors.New(errorMessage)
 	}
-
-	data = gjson.GetBytes(body, dataPath).Value()
+	data, err = json.Marshal(gjson.GetBytes(body, dataPath).Value())
 	return data, err
 }
 
@@ -145,14 +143,14 @@ func (c *ClientGraphql) GetCostAndUsageReportSubscription(id string) (*CostAndUs
 	variables := map[string]interface{}{
 		"id": id,
 	}
-	subscription := CostAndUsageReportSubscription{}
 
 	data, err := c.graphql(query, variables, "data.awsCurSubscription")
 	if err != nil {
 		return nil, err
 	}
 
-	mapstructure.Decode(data, &subscription)
+	subscription := CostAndUsageReportSubscription{}
+	err = json.Unmarshal(data, &subscription)
 	payload := CostAndUsageReportSubscriptionPayload{
 		Payload: subscription,
 	}
@@ -174,14 +172,12 @@ func (c *ClientGraphql) CreateCostAndUsageReportSubscription(subscription CostAn
 		"assumeRoleExternalId":  subscription.AccessConfig.AssumeRoleExternalId,
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
-
-	var payload CostAndUsageReportSubscriptionPayload
-
 	data, err := c.graphql(query, variables, "data.awsCreateCurSubscription")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &payload)
+	payload := CostAndUsageReportSubscriptionPayload{}
+	err = json.Unmarshal(data, &payload)
 	return &payload, err
 }
 
@@ -202,13 +198,13 @@ func (c *ClientGraphql) UpdateCostAndUsageReportSubscription(subscription CostAn
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload CostAndUsageReportSubscriptionPayload
-
 	data, err := c.graphql(query, variables, "data.awsUpdateCurSubscription")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &payload)
+
+	payload := CostAndUsageReportSubscriptionPayload{}
+	err = json.Unmarshal(data, &payload)
 	return &payload, err
 }
 
@@ -229,13 +225,14 @@ func (c *ClientGraphql) GetCloudTrailSubscription(id string) (*CloudTrailSubscri
 		"id": id,
 	}
 
-	subscription := CloudTrailSubscription{}
-
 	data, err := c.graphql(query, variables, "data.awsCloudTrailSubscription")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &subscription)
+
+	subscription := CloudTrailSubscription{}
+	err = json.Unmarshal(data, &subscription)
+
 	payload := CloudTrailSubscriptionPayload{
 		Payload: subscription,
 	}
@@ -259,13 +256,12 @@ func (c *ClientGraphql) CreateCloudTrailSubscription(subscription CloudTrailSubs
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload CloudTrailSubscriptionPayload
-
 	data, err := c.graphql(query, variables, "data.awsCreateCloudTrailSubscription")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &payload)
+	payload := CloudTrailSubscriptionPayload{}
+	err = json.Unmarshal(data, &payload)
 	return &payload, err
 }
 
@@ -285,13 +281,12 @@ func (c *ClientGraphql) UpdateCloudTrailSubscription(subscription CloudTrailSubs
 		"assumeRoleSessionName": subscription.AccessConfig.AssumeRoleSessionName,
 	}
 
-	var payload CloudTrailSubscriptionPayload
-
 	data, err := c.graphql(query, variables, "data.awsUpdateCloudTrailSubscription")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &payload)
+	payload := CloudTrailSubscriptionPayload{}
+	err = json.Unmarshal(data, &payload)
 	return &payload, err
 }
 
@@ -306,16 +301,15 @@ func (c *ClientGraphql) DeleteCloudTrailSubscription(id string) error {
 }
 
 func (c *ClientGraphql) GetIdentityResolver() (*IdentityResolverPayload, error) {
-	query := GetIdentityResolver
-
-	resolver := IdentityResolver{}
+	query := GetIdentityResolverQuery
 
 	data, err := c.graphql(query, nil, "data.awsIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
 
-	mapstructure.Decode(data, &resolver)
+	resolver := IdentityResolver{}
+	err = json.Unmarshal(data, &resolver)
 	payload := IdentityResolverPayload{
 		Payload: resolver,
 	}
@@ -323,7 +317,7 @@ func (c *ClientGraphql) GetIdentityResolver() (*IdentityResolverPayload, error) 
 }
 
 func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) error {
-	query := CreateIdentityResolver
+	query := SetIdentityResolverQuery
 	variables := map[string]interface{}{
 		"lambdaArn":             resolver.LambdaArn,
 		"readerMode":            resolver.AccessConfig.ReaderMode,
@@ -332,12 +326,12 @@ func (c *ClientGraphql) CreateIdentityResolver(resolver IdentityResolver) error 
 		"assumeRoleSessionName": resolver.AccessConfig.AssumeRoleSessionName,
 	}
 
-	_, err := c.graphql(query, variables, "data.awsCreateIdentityResolver")
+	_, err := c.graphql(query, variables, "data.awsSetIdentityResolver")
 	return err
 }
 
 func (c *ClientGraphql) UpdateIdentityResolver(resolver IdentityResolver) (*IdentityResolverPayload, error) {
-	query := UpdateIdentityResolver
+	query := UpdateIdentityResolverQuery
 	variables := map[string]interface{}{
 		"lambdaArn":             resolver.LambdaArn,
 		"readerMode":            resolver.AccessConfig.ReaderMode,
@@ -345,31 +339,30 @@ func (c *ClientGraphql) UpdateIdentityResolver(resolver IdentityResolver) (*Iden
 		"assumeRoleExternalId":  resolver.AccessConfig.AssumeRoleExternalId,
 		"assumeRoleSessionName": resolver.AccessConfig.AssumeRoleSessionName,
 	}
-
-	var payload IdentityResolverPayload
 
 	data, err := c.graphql(query, variables, "data.awsUpdateIdentityResolver")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &payload)
+	payload := IdentityResolverPayload{}
+	err = json.Unmarshal(data, &payload)
 	return &payload, err
 }
 
 func (c *ClientGraphql) DeleteIdentityResolver() error {
-	var query = DeleteIdentityResolver
+	var query = DeleteIdentityResolverQuery
 
 	_, err := c.graphql(query, nil, "data.awsDeleteIdentityResolver")
 	return err
 }
 
 func (c *ClientGraphql) GetIntegrationConfig() (*IntegrationConfig, error) {
-	var query = AwsIntegrationConfig
-	var integrationConfig IntegrationConfig
+	var query = AwsIntegrationConfigQuery
 	data, err := c.graphql(query, nil, "data.awsIntegrationConfig")
 	if err != nil {
 		return nil, err
 	}
-	mapstructure.Decode(data, &integrationConfig)
+	integrationConfig := IntegrationConfig{}
+	err = json.Unmarshal(data, &integrationConfig)
 	return &integrationConfig, err
 }

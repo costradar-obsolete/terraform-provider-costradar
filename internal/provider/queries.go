@@ -47,9 +47,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
 	}){
-		status
+		success
 		error
-		payload {
+		result {
 			id
             sourceTopicArn
 			reportName
@@ -82,7 +82,7 @@ mutation (
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsUpdateCurSubscription(subscriptionId: $id, input:{
+	awsUpdateCurSubscription(id: $id, input:{
 		bucketName: $bucketName,
 		bucketRegion: $bucketRegion,
 		bucketPathPrefix: $bucketPathPrefix,
@@ -96,9 +96,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
   	}){
-		status
+		success
 		error
-		payload {
+		result {
 			id
 			sourceTopicArn
 			reportName
@@ -119,10 +119,10 @@ mutation (
 
 var DeleteCostAndUsageReportSubscriptionQuery = `
 mutation($id: String!) {
-	awsDeleteCurSubscription(subscriptionId: $id) {
-		status
+	awsDeleteCurSubscription(id: $id) {
+		success
 		error
-		payload {
+		result {
 			id
 		}
 	}
@@ -173,9 +173,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
 	}){
-		status
+		success
 		error
-		payload {
+		result {
 			id
 			trailName
 			bucketName
@@ -206,7 +206,7 @@ mutation (
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsUpdateCloudTrailSubscription(subscriptionId: $id, input: {
+	awsUpdateCloudTrailSubscription(id: $id, input: {
 		trailName: $trailName,
       	bucketName: $bucketName,
       	bucketRegion: $bucketRegion,
@@ -219,9 +219,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
   	}) {
-		status
+		success
 		error
-		payload {
+		result {
 			id
 			trailName
 			bucketName
@@ -241,16 +241,16 @@ mutation (
 
 var DeleteCloudTrailSubscriptionQuery = `
 mutation($id: String!) {
-	awsDeleteCloudTrailSubscription(subscriptionId: $id) {
-	status
+	awsDeleteCloudTrailSubscription(id: $id) {
+	success
 	error
-	payload {
+	result {
 		id
 	}}
 }
 `
 
-var AwsIntegrationConfig = `
+var AwsIntegrationConfigQuery = `
 query {
   awsIntegrationConfig {
     integrationRoleArn
@@ -263,7 +263,7 @@ query {
 }
 `
 
-var GetIdentityResolver = `
+var GetIdentityResolverQuery = `
 query {
   	awsIdentityResolver{
 		lambdaArn
@@ -276,7 +276,7 @@ query {
   	}
 }`
 
-var CreateIdentityResolver = `
+var SetIdentityResolverQuery = `
 mutation (
 	$lambdaArn: String!
 	$readerMode: ReaderMode!
@@ -284,7 +284,7 @@ mutation (
 	$assumeRoleExternalId: String
 	$assumeRoleSessionName: String
 ){
-	awsCreateIdentityResolver(input:{
+	awsSetIdentityResolver(input:{
 		lambdaArn: $lambdaArn,
 		accessConfig:{
 			readerMode: $readerMode,
@@ -293,9 +293,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
 	}){
-		status
+		success
 		error
-		payload {
+		result {
 			lambdaArn
 			accessConfig {
 				readerMode
@@ -307,7 +307,7 @@ mutation (
 	}
 }`
 
-var UpdateIdentityResolver = `
+var UpdateIdentityResolverQuery = `
 mutation (
 	$lambdaArn: String!
 	$readerMode: ReaderMode!
@@ -324,9 +324,9 @@ mutation (
 			assumeRoleSessionName: $assumeRoleSessionName
 		}
 	}){
-		status
+		success
 		error
-		payload {
+		result {
 			lambdaArn
 			accessConfig {
 				readerMode
@@ -338,14 +338,10 @@ mutation (
 	}
 }`
 
-var DeleteIdentityResolver = `
+var DeleteIdentityResolverQuery = `
 mutation{
 	awsDeleteIdentityResolver {
-		status
+		success
 		error
 	}
 }`
-
-//payload {
-//lambdaArn
-//}

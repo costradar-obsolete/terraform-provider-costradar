@@ -1,14 +1,14 @@
 terraform {
   required_providers {
     costradar = {
-      version = "0.1.7"
+      version = "0.1.8"
       source  = "localhost/local/costradar"
     }
   }
 }
 
 provider "costradar" {
-  token    = "api_Uu94jTpg7UOw5vDFcHUsqFo0pkYoZiL8"
+  token    = "api_xyz_costradar"
   endpoint = "http://localhost:8000/graphql"
 }
 
@@ -16,7 +16,7 @@ resource "costradar_cur_subscription" "test" {
   report_name        = "report-name"
   bucket_name        = "test-costradar-bucket"
   bucket_region      = "eu-central-1"
-  bucket_path_prefix = "prefix"
+  bucket_path_prefix = null
   time_unit          = "hour"
 
   source_topic_arn = "arn:aws:sns:eu-central-1:123456789012:cur"
@@ -33,7 +33,8 @@ resource "costradar_cloudtrail_subscription" "test" {
   trail_name         = "trail-name"
   bucket_name        = "test-costradar-bucket"
   bucket_region      = "eu-central-1"
-  bucket_path_prefix = "prefix"
+  bucket_path_prefix = costradar_cur_subscription.test.bucket_path_prefix
+//  bucket_path_prefix = null
 
   source_topic_arn = "arn:aws:sns:eu-central-1:123456789012:cloudtrail"
 
@@ -43,6 +44,9 @@ resource "costradar_cloudtrail_subscription" "test" {
     assume_role_external_id  = "assume_role_external_id_value"
     assume_role_session_name = "assume_role_session_name_value"
   }
+  depends_on = [
+    costradar_cur_subscription.test
+  ]
 }
 
 resource "costradar_identity_resolver" "this" {
@@ -71,4 +75,8 @@ output "cur_subscription" {
 
 output "cloudtrail_subscription" {
   value = costradar_cloudtrail_subscription.test
+}
+
+output "test" {
+  value = coalesce("", null, "123")
 }

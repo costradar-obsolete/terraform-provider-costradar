@@ -4,8 +4,6 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"strconv"
-	"time"
 )
 
 var integrationConfigSchema = map[string]*schema.Schema{
@@ -57,6 +55,6 @@ func dataSourceIntegrationConfigRead(ctx context.Context, d *schema.ResourceData
 	d.Set("cloudtrail_sqs_url", integrationConfig.CloudTrailSqsUrl)
 	d.Set("integration_role_arn", integrationConfig.IntegrationRoleArn)
 	d.Set("integration_role_external_id", integrationConfig.IntegrationRoleExternalId)
-	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+	//d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
 	return diags
 }
