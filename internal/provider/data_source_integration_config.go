@@ -2,6 +2,8 @@ package provider
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/base64"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -55,6 +57,11 @@ func dataSourceIntegrationConfigRead(ctx context.Context, d *schema.ResourceData
 	d.Set("cloudtrail_sqs_url", integrationConfig.CloudTrailSqsUrl)
 	d.Set("integration_role_arn", integrationConfig.IntegrationRoleArn)
 	d.Set("integration_role_external_id", integrationConfig.IntegrationRoleExternalId)
-	//d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
+
+	id := integrationConfig.CurSqsArn + integrationConfig.CloudTrailSqsArn + integrationConfig.IntegrationRoleArn
+	hasher := sha1.New()
+	hasher.Write([]byte(id))
+	shaId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	d.SetId(shaId)
 	return diags
 }
