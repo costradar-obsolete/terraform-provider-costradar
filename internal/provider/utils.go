@@ -1,7 +1,10 @@
 package provider
 
 import (
+	"github.com/oklog/ulid"
 	"github.com/tidwall/gjson"
+	"math/rand"
+	"time"
 )
 
 func getErrorFromBody(body []byte, dataPath string) string {
@@ -18,4 +21,11 @@ func getErrorFromBody(body []byte, dataPath string) string {
 		return errorMessage
 	}
 	return ""
+}
+
+func getUniqueId() string {
+	t := time.Now().UTC()
+	entropy := rand.New(rand.NewSource(t.UnixNano()))
+	id := ulid.MustNew(ulid.Timestamp(t), entropy)
+	return id.String()
 }

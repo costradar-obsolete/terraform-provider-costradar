@@ -26,7 +26,7 @@ var resourceCurSubscriptionSchema = map[string]*schema.Schema{
 	"bucket_path_prefix": {
 		Type:     schema.TypeString,
 		Optional: true,
-		Default: "",
+		Default:  "",
 	},
 	"time_unit": {
 		Type:     schema.TypeString,
@@ -93,16 +93,16 @@ func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportS
 		accessConfig.AssumeRoleSessionName = v
 	}
 	subscription := CostAndUsageReportSubscription{
-		ID:               d.Get("id").(string),
-		ReportName:       d.Get("report_name").(string),
-		BucketName:       d.Get("bucket_name").(string),
-		BucketRegion:     d.Get("bucket_region").(string),
-		SourceTopicArn:   d.Get("source_topic_arn").(string),
-		TimeUnit:         d.Get("time_unit").(string),
-		AccessConfig:     accessConfig,
+		ID:             d.Get("id").(string),
+		ReportName:     d.Get("report_name").(string),
+		BucketName:     d.Get("bucket_name").(string),
+		BucketRegion:   d.Get("bucket_region").(string),
+		SourceTopicArn: d.Get("source_topic_arn").(string),
+		TimeUnit:       d.Get("time_unit").(string),
+		AccessConfig:   accessConfig,
 	}
 
-	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != ""{
+	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != "" {
 		subscription.BucketPathPrefix = v.(string)
 	}
 	return subscription

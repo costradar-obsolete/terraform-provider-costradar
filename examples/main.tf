@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     costradar = {
-      version = "0.1.8"
+      version = "0.1.11"
       source  = "localhost/local/costradar"
     }
   }
@@ -80,3 +80,76 @@ output "cloudtrail_subscription" {
 output "test" {
   value = coalesce("", null, "123")
 }
+resource "costradar_workload" "test" {
+  name = "Terraform Test Workload"
+  owners = []
+  tags = {}
+}
+
+resource "costradar_workload_resource_set" "test" {
+  workload_id = costradar_workload.test.id
+
+  workload_resource {
+    service_vendor = "aws"
+    resource_id    = "xxx:yyy:zzz"
+  }
+
+  workload_resource {
+    service_vendor = "aws"
+    resource_id    = "xxx:yyy:zzz1"
+  }
+}
+
+resource "costradar_team" "test" {
+  name = "Terraform Test Team"
+}
+
+resource "costradar_team_member_set" "test" {
+  team_id = costradar_team.test.id
+
+  team_member {
+    email = "daniel@gmail.com"
+  }
+
+  team_member {
+    email = "bogdan@gmail.com"
+  }
+}
+
+resource "costradar_user" "test" {
+  email = "terraform@gmail.com"
+  name = "Daniel"
+  initials = "D"
+
+  tags = {
+    name   = "test"
+    tenant = "costradar"
+  }
+}
+
+resource "costradar_user_identity_set" "test" {
+  user_id = costradar_user.test.id
+
+  user_identity {
+    service_vendor = "aws"
+    identity    = "xxx:yyy:zzz"
+  }
+
+  user_identity {
+    service_vendor = "aws"
+    identity    = "yyy:zzz:xxx"
+  }
+}
+//resource "costradar_tenant" "test" {
+//  alias = "Costradar"
+//  auth {
+//    client_id = "123"
+//    client_secret = "xxx"
+//    server_metadata_url = "https://tenant.com"
+//    client_kwargs = {
+//      name = "value"
+//    }
+//    email_domains = ["@gmail.com"]
+//  }
+//
+//}

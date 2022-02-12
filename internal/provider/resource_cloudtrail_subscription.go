@@ -26,7 +26,7 @@ var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
 	"bucket_path_prefix": {
 		Type:     schema.TypeString,
 		Optional: true,
-		Default: "",
+		Default:  "",
 	},
 	"source_topic_arn": {
 		Type:     schema.TypeString,
@@ -90,12 +90,12 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 	}
 
 	sub := CloudTrailSubscription{
-		ID:               d.Get("id").(string),
-		TrailName:        d.Get("trail_name").(string),
-		BucketName:       d.Get("bucket_name").(string),
-		BucketRegion:     d.Get("bucket_region").(string),
-		SourceTopicArn:   d.Get("source_topic_arn").(string),
-		AccessConfig:     accessConfig,
+		ID:             d.Get("id").(string),
+		TrailName:      d.Get("trail_name").(string),
+		BucketName:     d.Get("bucket_name").(string),
+		BucketRegion:   d.Get("bucket_region").(string),
+		SourceTopicArn: d.Get("source_topic_arn").(string),
+		AccessConfig:   accessConfig,
 	}
 
 	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != "" {
