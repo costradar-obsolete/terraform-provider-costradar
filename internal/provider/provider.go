@@ -32,7 +32,7 @@ func Provider() *schema.Provider {
 			"costradar_team_member_set":         resourceTeamMemberSet(),
 			"costradar_user":                    resourceUser(),
 			"costradar_user_identity_set":       resourceUserIdentitySet(),
-			"costradar_account":                 resourceAccount(),
+			"costradar_aws_account":             resourceAwsAccount(),
 			//"costradar_tenant":                  resourceTenant(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{

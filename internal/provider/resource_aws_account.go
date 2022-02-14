@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var resourceAccountSchema = map[string]*schema.Schema{
+var resourceAwsAccountSchema = map[string]*schema.Schema{
 	"id": {
 		Type:     schema.TypeString,
 		Computed: true,
@@ -62,20 +62,20 @@ var resourceAccountSchema = map[string]*schema.Schema{
 	},
 }
 
-func resourceAccount() *schema.Resource {
+func resourceAwsAccount() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAccountCreate,
-		ReadContext:   resourceAccountRead,
-		UpdateContext: resourceAccountUpdate,
-		DeleteContext: resourceAccountDelete,
+		CreateContext: resourceAwsAccountCreate,
+		ReadContext:   resourceAwsAccountRead,
+		UpdateContext: resourceAwsAccountUpdate,
+		DeleteContext: resourceAwsAccountDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema: resourceAccountSchema,
+		Schema: resourceAwsAccountSchema,
 	}
 }
 
-func accountFromResourceData(d *schema.ResourceData) Account {
+func accountAwsFromResourceData(d *schema.ResourceData) Account {
 	var accessConfig AccessConfig
 	accessConfigData := d.Get("access_config.0").(map[string]interface{})
 	if v, ok := accessConfigData["reader_mode"].(string); ok {
@@ -102,7 +102,7 @@ func accountFromResourceData(d *schema.ResourceData) Account {
 	return account
 }
 
-func accountToResourceData(d *schema.ResourceData, a Account) {
+func awsAccountToResourceData(d *schema.ResourceData, a Account) {
 	var accessConfigList []map[string]string
 	accessConfig := make(map[string]string)
 	accessConfig["reader_mode"] = a.AccessConfig.ReaderMode
@@ -117,53 +117,53 @@ func accountToResourceData(d *schema.ResourceData, a Account) {
 	d.Set("tags", a.Tags)
 }
 
-func resourceAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
 	id := d.Id()
-	account, err := c.GetAccount(id)
+	account, err := c.GetAwsAccount(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	accountToResourceData(d, account.Payload)
+	awsAccountToResourceData(d, account.Payload)
 	return diags
 }
 
-func resourceAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
 	var diags diag.Diagnostics
 
-	account := accountFromResourceData(d)
+	account := accountAwsFromResourceData(d)
 
-	a, err := c.CreateAccount(account)
+	a, err := c.CreateAwsAccount(account)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	d.SetId(a.Payload.ID)
-	resourceAccountRead(ctx, d, m)
+	resourceAwsAccountRead(ctx, d, m)
 	return diags
 }
 
-func resourceAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	account := accountFromResourceData(d)
+func resourceAwsAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	account := accountAwsFromResourceData(d)
 	c := m.(Client)
-	_, err := c.UpdateAccount(account)
+	_, err := c.UpdateAwsAccount(account)
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	return resourceAccountRead(ctx, d, m)
+	return resourceAwsAccountRead(ctx, d, m)
 }
 
-func resourceAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func resourceAwsAccountDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 	var diags diag.Diagnostics
 
 	id := d.Id()
 
-	err := c.DeleteAccount(id)
+	err := c.DeleteAwsAccount(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}

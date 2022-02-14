@@ -227,10 +227,10 @@ type Client interface {
 	UpdateUserIdentitySet(userId string, setId string, identitySet []UserIdentitySetItem) (*UserIdentitySetPayload, error)
 	DeleteUserIdentitySet(userId string, setId string) error
 
-	GetAccount(id string) (*AccountPayload, error)
-	CreateAccount(account Account) (*AccountPayload, error)
-	UpdateAccount(account Account) (*AccountPayload, error)
-	DeleteAccount(id string) error
+	GetAwsAccount(id string) (*AccountPayload, error)
+	CreateAwsAccount(account Account) (*AccountPayload, error)
+	UpdateAwsAccount(account Account) (*AccountPayload, error)
+	DeleteAwsAccount(id string) error
 
 	GetTenant() (*TenantPayload, error)
 	UpdateTenant(tenant Tenant) (*TenantPayload, error)
@@ -924,14 +924,13 @@ func (c *ClientGraphql) DeleteUserIdentitySet(userId string, setId string) error
 
 // ------------------------------------------------------------------------------------------
 
-func (c *ClientGraphql) GetAccount(id string) (*AccountPayload, error) {
-	query := GetAccountQuery
-
+func (c *ClientGraphql) GetAwsAccount(id string) (*AccountPayload, error) {
+	query := GetAwsAccountQuery
 	variables := map[string]interface{}{
 		"id": id,
 	}
 
-	data, err := c.graphql(query, variables, "data.getAccount")
+	data, err := c.graphql(query, variables, "data.awsGetAccount")
 	if err != nil {
 		return nil, err
 	}
@@ -942,8 +941,8 @@ func (c *ClientGraphql) GetAccount(id string) (*AccountPayload, error) {
 	return &payload, err
 }
 
-func (c *ClientGraphql) CreateAccount(account Account) (*AccountPayload, error) {
-	query := CreateAccountQuery
+func (c *ClientGraphql) CreateAwsAccount(account Account) (*AccountPayload, error) {
+	query := CreateAwsAccountQuery
 	variables := map[string]interface{}{
 		"accountId":    account.AccountId,
 		"alias":        account.Alias,
@@ -952,7 +951,7 @@ func (c *ClientGraphql) CreateAccount(account Account) (*AccountPayload, error) 
 		"tags":         account.Tags,
 	}
 
-	data, err := c.graphql(query, variables, "data.createAccount")
+	data, err := c.graphql(query, variables, "data.awsCreateAccount")
 	if err != nil {
 		return nil, err
 	}
@@ -962,8 +961,8 @@ func (c *ClientGraphql) CreateAccount(account Account) (*AccountPayload, error) 
 	return &payload, err
 }
 
-func (c *ClientGraphql) UpdateAccount(account Account) (*AccountPayload, error) {
-	query := UpdateAccountQuery
+func (c *ClientGraphql) UpdateAwsAccount(account Account) (*AccountPayload, error) {
+	query := UpdateAwsAccountQuery
 	variables := map[string]interface{}{
 		"id":           account.ID,
 		"alias":        account.Alias,
@@ -972,7 +971,7 @@ func (c *ClientGraphql) UpdateAccount(account Account) (*AccountPayload, error) 
 		"tags":         account.Tags,
 	}
 
-	data, err := c.graphql(query, variables, "data.updateAccount")
+	data, err := c.graphql(query, variables, "data.awsUpdateAccount")
 
 	if err != nil {
 		return nil, err
@@ -982,13 +981,13 @@ func (c *ClientGraphql) UpdateAccount(account Account) (*AccountPayload, error) 
 	return &payload, err
 }
 
-func (c *ClientGraphql) DeleteAccount(id string) error {
-	query := DeleteAccountQuery
+func (c *ClientGraphql) DeleteAwsAccount(id string) error {
+	query := DeleteAwsAccountQuery
 	variables := map[string]interface{}{
 		"id": id,
 	}
 
-	_, err := c.graphql(query, variables, "data.deleteAccount")
+	_, err := c.graphql(query, variables, "data.awsDeleteAccount")
 	return err
 }
 

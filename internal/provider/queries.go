@@ -804,9 +804,9 @@ mutation ($userId: String!, $setId: String!) {
 }
 `
 
-var GetAccountQuery = `
+var GetAwsAccountQuery = `
 query ($id: String!){
-  getAccount(id: $id){
+  awsGetAccount(id: $id){
     result {
       id
       accountId
@@ -826,15 +826,15 @@ query ($id: String!){
 }
 `
 
-var CreateAccountQuery = `
+var CreateAwsAccountQuery = `
 mutation (
   	$accountId: String!,
 	$alias: String!
 	$owners: [String!]
-    $accessConfig: AccessConfigInput!
+    $accessConfig: AWSAccessConfigInput!
 	$tags: JSON
   ){
-  createAccount(
+  awsCreateAccount(
     accountId: $accountId,
     input: {
       alias: $alias
@@ -860,15 +860,15 @@ mutation (
 }
 `
 
-var UpdateAccountQuery = `
+var UpdateAwsAccountQuery = `
 mutation (
 	$id: String!
 	$alias: String!
 	$owners: [String!]
-    $accessConfig: AccessConfigInput!
+    $accessConfig: AWSAccessConfigInput!
 	$tags: JSON
   ){
-  updateAccount(
+  awsUpdateAccount(
 	id: $id, 
 	input: {
 	  alias: $alias
@@ -894,9 +894,9 @@ mutation (
 }
 `
 
-var DeleteAccountQuery = `
+var DeleteAwsAccountQuery = `
 mutation ($id: String!) {
-  deleteAccount(id: $id){
+  awsDeleteAccount(id: $id){
     result {
       id
       accountId

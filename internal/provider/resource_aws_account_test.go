@@ -11,7 +11,7 @@ import (
 func TestAccAccount(t *testing.T) {
 	os.Setenv("COSTRADAR_TOKEN", "api_xyz_costradar")
 	os.Setenv("COSTRADAR_ENDPOINT", "http://localhost:8000/graphql")
-	resourceName := "costradar_account.test"
+	resourceName := "costradar_aws_account.test"
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: map[string]func() (*schema.Provider, error){
 			"costradar": func() (*schema.Provider, error) {
@@ -55,7 +55,7 @@ func TestAccAccount(t *testing.T) {
 
 func testAccAccountTF() string {
 	return `
-	  resource "costradar_account" "test" {
+	  resource "costradar_aws_account" "test" {
 	  	account_id = "123:123"
 		alias = "Alias"
 	  	owners = [
@@ -74,7 +74,7 @@ func testAccAccountTF() string {
 
 func testAccAccountUpdateTF() string {
 	return `
-	  resource "costradar_account" "test" {
+	  resource "costradar_aws_account" "test" {
 		account_id = "123:123"
 		alias = "Changed Alias"
 		owners = [

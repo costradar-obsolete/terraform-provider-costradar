@@ -1,7 +1,7 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 NAME=costradar
 BINARY=terraform-provider-${NAME}_${VERSION}
-VERSION=0.1.11
+VERSION=0.1.12
 HOSTNAME=localhost
 NAMESPACE=local
 GOARCH = amd64
