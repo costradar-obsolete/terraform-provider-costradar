@@ -23,7 +23,7 @@ func TestAccWorkload(t *testing.T) {
 				Config: testAccWorkloadTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Terraform Test Workload"),
-					resource.TestCheckResourceAttr(resourceName, "description", ""),
+					//resource.TestCheckResourceAttr(resourceName, "description", ""),
 					resource.TestCheckResourceAttr(resourceName, "owners.0", "email1@gmail.com"),
 					resource.TestCheckResourceAttr(resourceName, "owners.1", "email2@gmail.com"),
 					resource.TestCheckResourceAttr(resourceName, "tags.name", "test"),

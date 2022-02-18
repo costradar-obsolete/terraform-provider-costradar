@@ -49,6 +49,53 @@ resource "costradar_cloudtrail_subscription" "test" {
   ]
 }
 
+resource "costradar_aws_account" "test" {
+  account_id = "123:123"
+  alias = "Alias"
+  access_config {
+    reader_mode = "direct"
+  }
+  owners = [
+    "email1@gmail.com",
+    "email2@gmail.com"
+  ]
+  tags = {
+    name   = "test"
+    tenant = "costradar"
+  }
+}
+
+resource "costradar_workload" "test" {
+  name = "Terraform Test Workload"
+    description = "test"
+    owners = [
+      "test@email.com"
+    ]
+    tags = {
+      "name": "Daniel"
+    }
+}
+
+resource "costradar_user" "test" {
+  email = "terraform@gmail.com"
+  name = "Daniel"
+  initials = "D"
+  icon_url = "test"
+  tags = {
+      name   = "test"
+      tenant = "costradar"
+  }
+}
+
+resource "costradar_team" "test" {
+  name = "Terraform Test Team"
+  description = "test"
+  tags = {
+    name   = "test"
+    tenant = "costradar"
+  }
+}
+
 resource "costradar_identity_resolver" "this" {
   lambda_arn = "123:xxx:yyy"
   access_config {
@@ -80,11 +127,6 @@ output "cloudtrail_subscription" {
 output "test" {
   value = coalesce("", null, "123")
 }
-resource "costradar_workload" "test" {
-  name = "Terraform Test Workload"
-  owners = []
-  tags = {}
-}
 
 resource "costradar_workload_resource_set" "test" {
   workload_id = costradar_workload.test.id
@@ -100,10 +142,6 @@ resource "costradar_workload_resource_set" "test" {
   }
 }
 
-resource "costradar_team" "test" {
-  name = "Terraform Test Team"
-}
-
 resource "costradar_team_member_set" "test" {
   team_id = costradar_team.test.id
 
@@ -116,16 +154,6 @@ resource "costradar_team_member_set" "test" {
   }
 }
 
-resource "costradar_user" "test" {
-  email = "terraform@gmail.com"
-  name = "Daniel"
-  initials = "D"
-
-  tags = {
-    name   = "test"
-    tenant = "costradar"
-  }
-}
 
 resource "costradar_user_identity_set" "test" {
   user_id = costradar_user.test.id

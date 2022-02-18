@@ -65,9 +65,13 @@ func UserFromResourceData(d *schema.ResourceData) User {
 func UserToResourceData(d *schema.ResourceData, u User) {
 	d.Set("name", u.Name)
 	d.Set("initials", u.Initials)
-	d.Set("icon_url", u.IconUrl)
 	d.Set("email", u.Email)
-	d.Set("tags", u.Tags)
+	if nilIfEmpty(u.IconUrl) != nil {
+		d.Set("icon_url", u.IconUrl)
+	}
+	if nilIfEmpty(u.Tags) != nil {
+		d.Set("tags", u.Tags)
+	}
 }
 
 func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -95,9 +99,9 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(w.Payload.ID)
-	resourceUserRead(ctx, d, m)
 
+	resourceUserRead(ctx, d, m)
+	d.SetId(w.Payload.ID)
 	return diags
 }
 

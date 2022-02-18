@@ -23,7 +23,7 @@ func TestAccTeam(t *testing.T) {
 				Config: testAccTeamTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "name", "Terraform Test Team"),
-					resource.TestCheckResourceAttr(resourceName, "description", ""),
+					//resource.TestCheckResourceAttr(resourceName, "description", ""),
 					resource.TestCheckResourceAttr(resourceName, "tags.name", "test"),
 					resource.TestCheckResourceAttr(resourceName, "tags.tenant", "costradar"),
 				),

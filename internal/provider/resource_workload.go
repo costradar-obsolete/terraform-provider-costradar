@@ -61,9 +61,15 @@ func workloadFromResourceData(d *schema.ResourceData) Workload {
 
 func workloadToResourceData(d *schema.ResourceData, w Workload) {
 	d.Set("name", w.Name)
-	d.Set("description", w.Description)
-	d.Set("owners", w.Owners)
-	d.Set("tags", w.Tags)
+	if nilIfEmpty(w.Owners) != nil {
+		d.Set("owners", w.Owners)
+	}
+	if nilIfEmpty(w.Tags) != nil {
+		d.Set("tags", w.Tags)
+	}
+	if nilIfEmpty(w.Description) != nil {
+		d.Set("description", w.Description)
+	}
 }
 
 func resourceWorkloadRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -91,9 +97,9 @@ func resourceWorkloadCreate(ctx context.Context, d *schema.ResourceData, m inter
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(w.Payload.ID)
-	resourceWorkloadRead(ctx, d, m)
 
+	resourceWorkloadRead(ctx, d, m)
+	d.SetId(w.Payload.ID)
 	return diags
 }
 

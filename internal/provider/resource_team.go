@@ -42,19 +42,23 @@ func resourceTeam() *schema.Resource {
 }
 
 func TeamFromResourceData(d *schema.ResourceData) Team {
-	Team := Team{
+	team := Team{
 		ID:          d.Get("id").(string),
 		Name:        d.Get("name").(string),
 		Description: d.Get("description").(string),
 		Tags:        d.Get("tags").(map[string]interface{}),
 	}
-	return Team
+	return team
 }
 
 func TeamToResourceData(d *schema.ResourceData, t Team) {
 	d.Set("name", t.Name)
-	d.Set("description", t.Description)
-	d.Set("tags", t.Tags)
+	if nilIfEmpty(t.Description) != nil {
+		d.Set("description", t.Description)
+	}
+	if nilIfEmpty(t.Tags) != nil {
+		d.Set("tags", t.Tags)
+	}
 }
 
 func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -82,9 +86,9 @@ func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(w.Payload.ID)
-	resourceTeamRead(ctx, d, m)
 
+	resourceTeamRead(ctx, d, m)
+	d.SetId(w.Payload.ID)
 	return diags
 }
 

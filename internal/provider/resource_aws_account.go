@@ -113,8 +113,14 @@ func awsAccountToResourceData(d *schema.ResourceData, a Account) {
 	d.Set("account_id", a.AccountId)
 	d.Set("alias", a.Alias)
 	d.Set("access_config", accessConfigList)
-	d.Set("owners", a.Owners)
-	d.Set("tags", a.Tags)
+	if nilIfEmpty(a.Owners) != nil {
+		d.Set("owners", a.Owners)
+	}
+	if nilIfEmpty(a.Tags) != nil {
+		d.Set("tags", a.Tags)
+	}
+	//d.Set("owners", a.Owners)
+	//d.Set("tags", a.Tags)
 }
 
 func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -142,8 +148,9 @@ func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m int
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.SetId(a.Payload.ID)
+
 	resourceAwsAccountRead(ctx, d, m)
+	d.SetId(a.Payload.ID)
 	return diags
 }
 
