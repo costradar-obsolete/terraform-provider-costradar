@@ -97,8 +97,6 @@ func identityResolverToResourceData(d *schema.ResourceData, rc IdentityResolver)
 func resourceIdentityResolverCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	var resolverConfig = identityResolverFromResourceData(d)
 
 	err := c.CreateIdentityResolver(resolverConfig)
@@ -106,9 +104,8 @@ func resourceIdentityResolverCreate(ctx context.Context, d *schema.ResourceData,
 		return diag.FromErr(err)
 	}
 	d.SetId(strconv.FormatInt(time.Now().Unix(), 10))
-	resourceIdentityResolverRead(ctx, d, m)
 
-	return diags
+	return resourceIdentityResolverRead(ctx, d, m)
 }
 
 func resourceIdentityResolverRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

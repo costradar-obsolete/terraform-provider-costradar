@@ -106,7 +106,6 @@ func resourceUserIdentitySetRead(ctx context.Context, d *schema.ResourceData, m 
 func resourceUserIdentitySetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
 	userId, _, userIdentitySet := userIdentitySetFromResourceData(d)
 	setId := getUniqueId()
 	_, err := c.CreateUserIdentitySet(userId, setId, userIdentitySet)
@@ -114,8 +113,8 @@ func resourceUserIdentitySetCreate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 	d.SetId(userId + "/" + setId)
-	resourceUserIdentitySetRead(ctx, d, m)
-	return diags
+
+	return resourceUserIdentitySetRead(ctx, d, m)
 }
 
 func resourceUserIdentitySetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

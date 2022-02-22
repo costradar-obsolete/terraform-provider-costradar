@@ -91,8 +91,6 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	var user = UserFromResourceData(d)
 
 	w, err := c.CreateUser(user.Email, user)
@@ -100,9 +98,8 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 		return diag.FromErr(err)
 	}
 
-	resourceUserRead(ctx, d, m)
 	d.SetId(w.Payload.ID)
-	return diags
+	return resourceUserRead(ctx, d, m)
 }
 
 func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

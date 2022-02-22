@@ -106,7 +106,6 @@ func resourceWorkloadSetRead(ctx context.Context, d *schema.ResourceData, m inte
 func resourceWorkloadSetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
 	workloadId, _, workloadSet := workloadSetFromResourceData(d)
 	setId := getUniqueId()
 	_, err := c.CreateWorkloadSet(workloadId, setId, workloadSet)
@@ -114,8 +113,8 @@ func resourceWorkloadSetCreate(ctx context.Context, d *schema.ResourceData, m in
 		return diag.FromErr(err)
 	}
 	d.SetId(workloadId + "/" + setId)
-	resourceWorkloadSetRead(ctx, d, m)
-	return diags
+
+	return resourceWorkloadSetRead(ctx, d, m)
 }
 
 func resourceWorkloadSetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

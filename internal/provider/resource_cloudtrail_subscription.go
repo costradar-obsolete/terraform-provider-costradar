@@ -90,17 +90,15 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 	}
 
 	sub := CloudTrailSubscription{
-		ID:             d.Get("id").(string),
-		TrailName:      d.Get("trail_name").(string),
-		BucketName:     d.Get("bucket_name").(string),
-		BucketRegion:   d.Get("bucket_region").(string),
-		SourceTopicArn: d.Get("source_topic_arn").(string),
-		AccessConfig:   accessConfig,
+		ID:               d.Get("id").(string),
+		TrailName:        d.Get("trail_name").(string),
+		BucketName:       d.Get("bucket_name").(string),
+		BucketRegion:     d.Get("bucket_region").(string),
+		SourceTopicArn:   d.Get("source_topic_arn").(string),
+		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
+		AccessConfig:     accessConfig,
 	}
 
-	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != "" {
-		sub.BucketPathPrefix = v.(string)
-	}
 	return sub
 }
 
@@ -115,17 +113,13 @@ func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSu
 	d.Set("trail_name", s.TrailName)
 	d.Set("bucket_name", s.BucketName)
 	d.Set("bucket_region", s.BucketRegion)
-	if s.BucketPathPrefix != "" {
-		d.Set("bucket_path_prefix", s.BucketPathPrefix)
-	}
 	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("access_config", accessConfigList)
+	d.Set("bucket_path_prefix", s.BucketPathPrefix)
 }
 
 func resourceCloudTrailSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
-
-	var diags diag.Diagnostics
 
 	var subscription = cloudTrailSubscriptionFromResourceData(d)
 
@@ -134,9 +128,8 @@ func resourceCloudTrailSubscriptionCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 	d.SetId(s.Payload.ID)
-	resourceCloudTrailSubscriptionRead(ctx, d, m)
 
-	return diags
+	return resourceCloudTrailSubscriptionRead(ctx, d, m)
 }
 
 func resourceCloudTrailSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

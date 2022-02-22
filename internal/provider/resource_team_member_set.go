@@ -100,7 +100,6 @@ func resourceTeamMemberSetRead(ctx context.Context, d *schema.ResourceData, m in
 func resourceTeamMemberSetCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
 	teamId, _, TeamMemberSet := TeamMemberSetFromResourceData(d)
 	setId := getUniqueId()
 	_, err := c.CreateTeamMemberSet(teamId, setId, TeamMemberSet)
@@ -108,8 +107,8 @@ func resourceTeamMemberSetCreate(ctx context.Context, d *schema.ResourceData, m 
 		return diag.FromErr(err)
 	}
 	d.SetId(teamId + "/" + setId)
-	resourceTeamMemberSetRead(ctx, d, m)
-	return diags
+
+	return resourceTeamMemberSetRead(ctx, d, m)
 }
 
 func resourceTeamMemberSetUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

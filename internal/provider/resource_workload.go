@@ -89,8 +89,6 @@ func resourceWorkloadRead(ctx context.Context, d *schema.ResourceData, m interfa
 func resourceWorkloadCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	var workload = workloadFromResourceData(d)
 
 	w, err := c.CreateWorkload(workload)
@@ -98,9 +96,8 @@ func resourceWorkloadCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 
-	resourceWorkloadRead(ctx, d, m)
 	d.SetId(w.Payload.ID)
-	return diags
+	return resourceWorkloadRead(ctx, d, m)
 }
 
 func resourceWorkloadUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

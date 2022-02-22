@@ -130,8 +130,6 @@ func resourceTenantRead(ctx context.Context, d *schema.ResourceData, m interface
 func resourceTenantCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	tenant := tenantFromResourceData(d)
 
 	_, err := c.UpdateTenant(tenant)
@@ -139,8 +137,7 @@ func resourceTenantCreate(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 	d.SetId(getUniqueId())
-	resourceTenantRead(ctx, d, m)
-	return diags
+	return resourceTenantRead(ctx, d, m)
 }
 
 func resourceTenantUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

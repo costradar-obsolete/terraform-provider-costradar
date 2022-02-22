@@ -93,18 +93,16 @@ func curSubscriptionFromResourceData(d *schema.ResourceData) CostAndUsageReportS
 		accessConfig.AssumeRoleSessionName = v
 	}
 	subscription := CostAndUsageReportSubscription{
-		ID:             d.Get("id").(string),
-		ReportName:     d.Get("report_name").(string),
-		BucketName:     d.Get("bucket_name").(string),
-		BucketRegion:   d.Get("bucket_region").(string),
-		SourceTopicArn: d.Get("source_topic_arn").(string),
-		TimeUnit:       d.Get("time_unit").(string),
-		AccessConfig:   accessConfig,
+		ID:               d.Get("id").(string),
+		ReportName:       d.Get("report_name").(string),
+		BucketName:       d.Get("bucket_name").(string),
+		BucketRegion:     d.Get("bucket_region").(string),
+		SourceTopicArn:   d.Get("source_topic_arn").(string),
+		TimeUnit:         d.Get("time_unit").(string),
+		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
+		AccessConfig:     accessConfig,
 	}
 
-	if v, ok := d.GetOk("bucket_path_prefix"); ok && v != "" {
-		subscription.BucketPathPrefix = v.(string)
-	}
 	return subscription
 }
 
@@ -119,18 +117,14 @@ func curSubscriptionToResourceData(d *schema.ResourceData, s CostAndUsageReportS
 	d.Set("report_name", s.ReportName)
 	d.Set("bucket_name", s.BucketName)
 	d.Set("bucket_region", s.BucketRegion)
-	if s.BucketPathPrefix != "" {
-		d.Set("bucket_path_prefix", s.BucketPathPrefix)
-	}
 	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("time_unit", s.TimeUnit)
 	d.Set("access_config", accessConfigList)
+	d.Set("bucket_path_prefix", s.BucketPathPrefix)
 }
 
 func resourceCurSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
-
-	var diags diag.Diagnostics
 
 	var subscription = curSubscriptionFromResourceData(d)
 
@@ -139,9 +133,8 @@ func resourceCurSubscriptionCreate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 	d.SetId(s.Payload.ID)
-	resourceCurSubscriptionRead(ctx, d, m)
 
-	return diags
+	return resourceCurSubscriptionRead(ctx, d, m)
 }
 
 func resourceCurSubscriptionRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

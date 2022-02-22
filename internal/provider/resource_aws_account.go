@@ -140,8 +140,6 @@ func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m inter
 func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	account := accountAwsFromResourceData(d)
 
 	a, err := c.CreateAwsAccount(account)
@@ -149,9 +147,8 @@ func resourceAwsAccountCreate(ctx context.Context, d *schema.ResourceData, m int
 		return diag.FromErr(err)
 	}
 
-	resourceAwsAccountRead(ctx, d, m)
 	d.SetId(a.Payload.ID)
-	return diags
+	return resourceAwsAccountRead(ctx, d, m)
 }
 
 func resourceAwsAccountUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

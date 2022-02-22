@@ -78,8 +78,6 @@ func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}
 func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
 
-	var diags diag.Diagnostics
-
 	var Team = TeamFromResourceData(d)
 
 	w, err := c.CreateTeam(Team)
@@ -87,9 +85,8 @@ func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface
 		return diag.FromErr(err)
 	}
 
-	resourceTeamRead(ctx, d, m)
 	d.SetId(w.Payload.ID)
-	return diags
+	return resourceTeamRead(ctx, d, m)
 }
 
 func resourceTeamUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
