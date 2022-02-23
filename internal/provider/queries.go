@@ -254,17 +254,14 @@ var AwsIntegrationConfigQuery = `
 query {
   awsIntegrationConfig {
     integrationRoleArn
-    integrationRoleExternalId
-    curSqsArn
-    curSqsUrl
-    cloudtrailSqsArn
-    cloudtrailSqsUrl
+	integrationSqsUrl
+    integrationSqsArn
   }
 }
 `
 
 var GetIdentityResolverQuery = `
-query {
+query {	
   	awsIdentityResolver{
 		lambdaArn
 		accessConfig {

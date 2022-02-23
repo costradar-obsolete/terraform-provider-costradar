@@ -112,11 +112,8 @@ type TenantPayload struct {
 
 type IntegrationConfig struct {
 	IntegrationRoleArn        string `json:"integrationRoleArn"`
-	IntegrationRoleExternalId string `json:"integrationRoleExternalId"`
-	CurSqsArn                 string `json:"curSqsArn"`
-	CurSqsUrl                 string `json:"curSqsUrl"`
-	CloudTrailSqsArn          string `json:"cloudtrailSqsArn"`
-	CloudTrailSqsUrl          string `json:"cloudtrailSqsUrl"`
+	IntegrationSqsUrl string `json:"integrationSqsUrl"`
+	IntegrationSqsArn string `json:"integrationSqsArn"`
 }
 
 type Workload struct {

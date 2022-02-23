@@ -22,10 +22,8 @@ func TestAccIntegrationConfig(t *testing.T) {
 				Config: testAccDataIntegrationConfigTF(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "integration_role_arn", "arn:aws:iam::016720764197:role/dev-integration-lambda"),
-					resource.TestCheckResourceAttr(resourceName, "cur_sqs_arn", "arn:aws:sqs:eu-central-1:016720764197:dev-integration-cur"),
-					resource.TestCheckResourceAttr(resourceName, "cur_sqs_url", "https://sqs.eu-central-1.amazonaws.com/016720764197/dev-integration-cur"),
-					resource.TestCheckResourceAttr(resourceName, "cloudtrail_sqs_arn", "arn:aws:sqs:eu-central-1:016720764197:dev-integration-cloudtrail"),
-					resource.TestCheckResourceAttr(resourceName, "cloudtrail_sqs_url", "https://sqs.eu-central-1.amazonaws.com/016720764197/dev-integration-cloudtrail"),
+					resource.TestCheckResourceAttr(resourceName, "integration_sqs_url", "https://sqs.eu-central-1.amazonaws.com/016720764197/costradar-dev-integration-logs"),
+					resource.TestCheckResourceAttr(resourceName, "integration_sqs_arn", "arn:aws:sqs:eu-central-1:016720764197:costradar-dev-integration-logs"),
 				),
 			},
 		},

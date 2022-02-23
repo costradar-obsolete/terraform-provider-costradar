@@ -13,24 +13,12 @@ var integrationConfigSchema = map[string]*schema.Schema{
 		Type:     schema.TypeString,
 		Computed: true,
 	},
-	"integration_role_external_id": {
-		Type:     schema.TypeString,
+	"integration_sqs_url": {
+		Type: schema.TypeString,
 		Computed: true,
 	},
-	"cur_sqs_arn": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
-	"cur_sqs_url": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
-	"cloudtrail_sqs_arn": {
-		Type:     schema.TypeString,
-		Computed: true,
-	},
-	"cloudtrail_sqs_url": {
-		Type:     schema.TypeString,
+	"integration_sqs_arn": {
+		Type: schema.TypeString,
 		Computed: true,
 	},
 }
@@ -51,14 +39,11 @@ func dataSourceIntegrationConfigRead(ctx context.Context, d *schema.ResourceData
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	d.Set("cur_sqs_arn", integrationConfig.CurSqsArn)
-	d.Set("cur_sqs_url", integrationConfig.CurSqsUrl)
-	d.Set("cloudtrail_sqs_arn", integrationConfig.CloudTrailSqsArn)
-	d.Set("cloudtrail_sqs_url", integrationConfig.CloudTrailSqsUrl)
 	d.Set("integration_role_arn", integrationConfig.IntegrationRoleArn)
-	d.Set("integration_role_external_id", integrationConfig.IntegrationRoleExternalId)
+	d.Set("integration_sqs_url", integrationConfig.IntegrationSqsUrl)
+	d.Set("integration_sqs_arn", integrationConfig.IntegrationSqsArn)
 
-	id := integrationConfig.CurSqsArn + integrationConfig.CloudTrailSqsArn + integrationConfig.IntegrationRoleArn
+	id := integrationConfig.IntegrationSqsArn + integrationConfig.IntegrationSqsUrl + integrationConfig.IntegrationRoleArn
 	hasher := sha1.New()
 	hasher.Write([]byte(id))
 	shaId := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
