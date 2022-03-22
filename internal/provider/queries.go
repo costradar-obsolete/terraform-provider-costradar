@@ -499,14 +499,10 @@ mutation ($workloadId: String!, $setId: String!) {
 var GetTeamQuery = `
 query ($teamId: String!){
   getTeam(teamId: $teamId){
-    result {
-      name
-      id
-      tags
-      description
-    }
-    success
-    error
+	name
+	id
+	tags
+	description
   }
 }`
 
@@ -582,12 +578,8 @@ var GetTeamMemberSetQuery = `
 query ($teamId: String!, $setId: String!) {
   getTeamMemberSet(teamId: $teamId, setId: $setId)
   {
-    success
-    result {
-	  setId
-      email
-    }
-    error
+	setId
+	email
   }
 }
 `

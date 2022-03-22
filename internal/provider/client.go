@@ -660,9 +660,12 @@ func (c *ClientGraphql) GetTeam(id string) (*TeamPayload, error) {
 	if err != nil {
 		return nil, err
 	}
+	team := Team{}
+	err = json.Unmarshal(data, &team)
 
-	payload := TeamPayload{}
-	err = json.Unmarshal(data, &payload)
+	payload := TeamPayload{
+		Payload: team,
+	}
 
 	return &payload, err
 }
@@ -727,9 +730,12 @@ func (c *ClientGraphql) GetTeamMemberSet(teamId string, setId string) (*TeamMemb
 	if err != nil {
 		return nil, err
 	}
+	var teamMemberSet []TeamMemberSetItem
 
-	payload := TeamMemberSetPayload{}
-	err = json.Unmarshal(data, &payload)
+	err = json.Unmarshal(data, &teamMemberSet)
+	payload := TeamMemberSetPayload{
+		Payload: teamMemberSet,
+	}
 
 	return &payload, err
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceTeamSchema = map[string]*schema.Schema{
@@ -67,11 +68,18 @@ func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	var diags diag.Diagnostics
 
 	id := d.Id()
-	Team, err := c.GetTeam(id)
+	team, err := c.GetTeam(id)
+
+	if team.Payload.ID == "" {
+		log.Printf("[WARN] Team (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	TeamToResourceData(d, Team.Payload)
+	TeamToResourceData(d, team.Payload)
 	return diags
 }
 
