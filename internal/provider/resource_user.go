@@ -84,7 +84,7 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	user, err := c.GetUser(id)
 
 	if user.Payload.ID == "" {
-		log.Printf("[WARN] AWS user (%s) not found, removing from state", d.Id())
+		log.Printf("[WARN] User (%s) not found, removing from state", d.Id())
 		d.SetId("")
 		return diags
 	}

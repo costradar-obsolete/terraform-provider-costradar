@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceWorkloadSchema = map[string]*schema.Schema{
@@ -79,6 +80,13 @@ func resourceWorkloadRead(ctx context.Context, d *schema.ResourceData, m interfa
 
 	id := d.Id()
 	workload, err := c.GetWorkload(id)
+
+	if workload.Payload.ID == "" {
+		log.Printf("[WARN] Workload (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

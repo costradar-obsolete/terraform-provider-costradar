@@ -373,15 +373,11 @@ mutation (
 var GetWorkloadQuery = `
 query ($workloadId: String!){
   getWorkload(workloadId: $workloadId){
-    result {
-	  id
-      name
-      tags
-      description
-      owners
-    }
-    success
-    error
+	id
+	name
+	tags
+	description
+	owners 
   }
 }`
 
@@ -425,13 +421,9 @@ var GetWorkloadResourceSetQuery = `
 query ($workloadId: String!, $setId: String!) {
   getWorkloadResourceSet(workloadId: $workloadId, setId: $setId)
   {
-    result {
-	  setId
-      serviceVendor
-      resourceId
-    }
-	success
-    error
+	setId
+	serviceVendor
+	resourceId
   }
 }
 `

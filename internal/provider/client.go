@@ -525,8 +525,11 @@ func (c *ClientGraphql) GetWorkload(id string) (*WorkloadPayload, error) {
 		return nil, err
 	}
 
-	payload := WorkloadPayload{}
-	err = json.Unmarshal(data, &payload)
+	workload := Workload{}
+	err = json.Unmarshal(data, &workload)
+	payload := WorkloadPayload{
+		Payload: workload,
+	}
 
 	return &payload, err
 }
@@ -593,9 +596,12 @@ func (c *ClientGraphql) GetWorkloadSet(workloadId string, setId string) (*Worklo
 	if err != nil {
 		return nil, err
 	}
+	var workloadSet []WorkloadSetItem
+	err = json.Unmarshal(data, &workloadSet)
 
-	payload := WorkloadSetPayload{}
-	err = json.Unmarshal(data, &payload)
+	payload := WorkloadSetPayload{
+		Payload: workloadSet,
+	}
 
 	return &payload, err
 }

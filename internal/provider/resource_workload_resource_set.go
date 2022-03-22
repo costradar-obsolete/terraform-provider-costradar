@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 	"strings"
 )
 
@@ -96,6 +97,13 @@ func resourceWorkloadSetRead(ctx context.Context, d *schema.ResourceData, m inte
 	var diags diag.Diagnostics
 	workloadId, setId, _ := workloadSetFromResourceData(d)
 	workloadSet, err := c.GetWorkloadSet(workloadId, setId)
+
+	if len(workloadSet.Payload) == 0 {
+		log.Printf("[WARN] Workload set (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
