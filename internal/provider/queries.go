@@ -634,17 +634,13 @@ mutation ($teamId: String!, $setId: String!) {
 
 var GetUserQuery = `
 query ($userId: String!) {
-	getUser(userId: $userId){
-    success
-    result {
-      id
-      name
-      email
-      initials
-	  iconUrl
-	  tags
-    }
-    error
+  getUser(userId: $userId){
+	id
+	name
+	email
+	initials
+	iconUrl
+	tags
   }
 }
 `
@@ -731,13 +727,9 @@ var GetUserIdentitySetQuery = `
 query ($userId: String!, $setId: String!) {
   getUserIdentitySet(userId: $userId, setId: $setId)
   {
-    success
-    result {
-	  setId
-      serviceVendor
-      identity
-    }
-    error
+    setId
+    serviceVendor
+    identity
   }
 }
 `

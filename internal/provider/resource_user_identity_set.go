@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 	"strings"
 )
 
@@ -96,6 +97,13 @@ func resourceUserIdentitySetRead(ctx context.Context, d *schema.ResourceData, m 
 	var diags diag.Diagnostics
 	userId, setId, _ := userIdentitySetFromResourceData(d)
 	userIdentitySet, err := c.GetUserIdentitySet(userId, setId)
+
+	if len(userIdentitySet.Payload) == 0 {
+		log.Printf("[WARN] User identity set (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

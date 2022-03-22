@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceUserSchema = map[string]*schema.Schema{
@@ -81,6 +82,13 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 
 	id := d.Id()
 	user, err := c.GetUser(id)
+
+	if user.Payload.ID == "" {
+		log.Printf("[WARN] AWS user (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

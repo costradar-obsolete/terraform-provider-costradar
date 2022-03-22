@@ -800,9 +800,12 @@ func (c *ClientGraphql) GetUser(id string) (*UserPayload, error) {
 	if err != nil {
 		return nil, err
 	}
+	user := User{}
+	err = json.Unmarshal(data, &user)
 
-	payload := UserPayload{}
-	err = json.Unmarshal(data, &payload)
+	payload := UserPayload{
+		Payload: user,
+	}
 
 	return &payload, err
 }
@@ -871,9 +874,12 @@ func (c *ClientGraphql) GetUserIdentitySet(userId string, setId string) (*UserId
 	if err != nil {
 		return nil, err
 	}
+	var userIdentitySet []UserIdentitySetItem
+	err = json.Unmarshal(data, &userIdentitySet)
 
-	payload := UserIdentitySetPayload{}
-	err = json.Unmarshal(data, &payload)
+	payload := UserIdentitySetPayload{
+		Payload: userIdentitySet,
+	}
 
 	return &payload, err
 }
