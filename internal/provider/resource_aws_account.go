@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceAwsAccountSchema = map[string]*schema.Schema{
@@ -130,6 +131,13 @@ func resourceAwsAccountRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	id := d.Id()
 	account, err := c.GetAwsAccount(id)
+
+	if account.Payload.ID == "" {
+		log.Printf("[WARN] Account (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceCurSubscriptionSchema = map[string]*schema.Schema{
@@ -74,6 +75,13 @@ func resourceCurSubscription() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: resourceCurSubscriptionSchema,
+		//CustomizeDiff: customdiff.ComputedIf("bucket_path_prefix", func(_ context.Context, d *schema.ResourceDiff, meta interface{}) bool {
+		//	old, _new := d.GetChange("bucket_path_prefix")
+		//	if old.(string) != _new.(string) {
+		//		return d.HasChange("bucket_path_prefix")
+		//	}
+		//	return false
+		//}),
 	}
 }
 
@@ -144,6 +152,13 @@ func resourceCurSubscriptionRead(ctx context.Context, d *schema.ResourceData, m 
 
 	subscriptionId := d.Id()
 	subscription, err := c.GetCostAndUsageReportSubscription(subscriptionId)
+
+	if subscription.Payload.ID == "" {
+		log.Printf("[WARN] Cost and usage report subscription (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

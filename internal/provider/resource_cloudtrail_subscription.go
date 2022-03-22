@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 )
 
 var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
@@ -139,6 +140,13 @@ func resourceCloudTrailSubscriptionRead(ctx context.Context, d *schema.ResourceD
 
 	subscriptionId := d.Id()
 	subscription, err := c.GetCloudTrailSubscription(subscriptionId)
+
+	if subscription.Payload.ID == "" {
+		log.Printf("[WARN] CloudTrail subscription (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}

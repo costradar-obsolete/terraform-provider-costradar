@@ -804,21 +804,17 @@ mutation ($userId: String!, $setId: String!) {
 var GetAwsAccountQuery = `
 query ($id: String!){
   awsGetAccount(id: $id){
-    result {
-      id
-      accountId
-      alias
-	  tags
-      owners
-      accessConfig {
-        readerMode
-		assumeRoleArn
-		assumeRoleExternalId
-		assumeRoleSessionName
-      }
-    }
-    success
-    error
+	id
+	accountId
+	alias
+	tags
+	owners
+	accessConfig {
+	  readerMode
+	  assumeRoleArn
+	  assumeRoleExternalId
+	  assumeRoleSessionName
+	}
   }
 }
 `

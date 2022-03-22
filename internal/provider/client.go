@@ -111,9 +111,9 @@ type TenantPayload struct {
 }
 
 type IntegrationConfig struct {
-	IntegrationRoleArn        string `json:"integrationRoleArn"`
-	IntegrationSqsUrl string `json:"integrationSqsUrl"`
-	IntegrationSqsArn string `json:"integrationSqsArn"`
+	IntegrationRoleArn string `json:"integrationRoleArn"`
+	IntegrationSqsUrl  string `json:"integrationSqsUrl"`
+	IntegrationSqsArn  string `json:"integrationSqsArn"`
 }
 
 type Workload struct {
@@ -932,8 +932,12 @@ func (c *ClientGraphql) GetAwsAccount(id string) (*AccountPayload, error) {
 		return nil, err
 	}
 
-	payload := AccountPayload{}
-	err = json.Unmarshal(data, &payload)
+	account := Account{}
+	err = json.Unmarshal(data, &account)
+
+	payload := AccountPayload{
+		Payload: account,
+	}
 
 	return &payload, err
 }

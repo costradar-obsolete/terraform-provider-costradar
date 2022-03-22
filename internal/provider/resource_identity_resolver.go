@@ -3,6 +3,7 @@ package provider
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"log"
 	"strconv"
 	"time"
 )
@@ -114,22 +115,19 @@ func resourceIdentityResolverRead(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 
 	resolverConfig, err := c.GetIdentityResolver()
+
+	if resolverConfig.Payload.LambdaArn == "" {
+		log.Printf("[WARN] Identity resolver config (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return diags
+	}
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	identityResolverToResourceData(d, resolverConfig.Payload)
 	return diags
 }
-
-//func resourceIdentityResolverUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-//	resolverConfig := identityResolverFromResourceData(d)
-//	c := m.(Client)
-//	_, err := c.UpdateIdentityResolver(resolverConfig)
-//	if err != nil {
-//		return diag.FromErr(err)
-//	}
-//	return resourceIdentityResolverRead(ctx, d, m)
-//}
 
 func resourceIdentityResolverDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(Client)
