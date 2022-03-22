@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     costradar = {
-      version = "0.1.14"
+      version = "0.1.15"
       source  = "localhost/local/costradar"
     }
   }

@@ -1,14 +1,3 @@
----
-subcategory: "Subscriptions"
-page_title: "Cost and usage report subscription"
-description: |-
-An example of using Cost and usage report subscription.
----
-
-
-You could create/manage a `costradar_cur_subscription` for the cost and usge report subscription with the following config:
-
-```terraform
 resource "costradar_cur_subscription" "this" {
   report_name        = "cur-report-name"
   bucket_name        = "s3-report-bucket"
@@ -25,4 +14,3 @@ resource "costradar_cur_subscription" "this" {
     assume_role_session_name = "CostradarSession"
   }
 }
-```
