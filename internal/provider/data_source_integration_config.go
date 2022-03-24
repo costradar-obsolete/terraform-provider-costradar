@@ -14,11 +14,11 @@ var integrationConfigSchema = map[string]*schema.Schema{
 		Computed: true,
 	},
 	"integration_sqs_url": {
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Computed: true,
 	},
 	"integration_sqs_arn": {
-		Type: schema.TypeString,
+		Type:     schema.TypeString,
 		Computed: true,
 	},
 }

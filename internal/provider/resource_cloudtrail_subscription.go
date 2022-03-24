@@ -27,7 +27,6 @@ var resourceCloudTrailSubscriptionSchema = map[string]*schema.Schema{
 	"bucket_path_prefix": {
 		Type:     schema.TypeString,
 		Optional: true,
-		Default:  "",
 	},
 	"source_topic_arn": {
 		Type:     schema.TypeString,
@@ -91,13 +90,17 @@ func cloudTrailSubscriptionFromResourceData(d *schema.ResourceData) CloudTrailSu
 	}
 
 	sub := CloudTrailSubscription{
-		ID:               d.Get("id").(string),
-		TrailName:        d.Get("trail_name").(string),
-		BucketName:       d.Get("bucket_name").(string),
-		BucketRegion:     d.Get("bucket_region").(string),
-		SourceTopicArn:   d.Get("source_topic_arn").(string),
-		BucketPathPrefix: d.Get("bucket_path_prefix").(string),
-		AccessConfig:     accessConfig,
+		ID:             d.Get("id").(string),
+		TrailName:      d.Get("trail_name").(string),
+		BucketName:     d.Get("bucket_name").(string),
+		BucketRegion:   d.Get("bucket_region").(string),
+		SourceTopicArn: d.Get("source_topic_arn").(string),
+		AccessConfig:   accessConfig,
+	}
+
+	if v, ok := d.GetOk("bucket_path_prefix"); ok {
+		v := v.(string)
+		sub.BucketPathPrefix = &v
 	}
 
 	return sub
@@ -116,7 +119,9 @@ func cloudTrailSubscriptionToResourceData(d *schema.ResourceData, s CloudTrailSu
 	d.Set("bucket_region", s.BucketRegion)
 	d.Set("source_topic_arn", s.SourceTopicArn)
 	d.Set("access_config", accessConfigList)
-	d.Set("bucket_path_prefix", s.BucketPathPrefix)
+	if s.BucketPathPrefix != nil {
+		d.Set("bucket_path_prefix", *s.BucketPathPrefix)
+	}
 }
 
 func resourceCloudTrailSubscriptionCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

@@ -23,7 +23,7 @@ type CostAndUsageReportSubscription struct {
 	ReportName       string       `json:"reportName"`
 	BucketName       string       `json:"bucketName"`
 	BucketRegion     string       `json:"bucketRegion"`
-	BucketPathPrefix string       `json:"bucketPathPrefix"`
+	BucketPathPrefix *string      `json:"bucketPathPrefix"`
 	TimeUnit         string       `json:"timeUnit"`
 	SourceTopicArn   string       `json:"sourceTopicArn"`
 	AccessConfig     AccessConfig `json:"accessConfig"`
@@ -34,7 +34,7 @@ type CloudTrailSubscription struct {
 	TrailName        string       `json:"trailName"`
 	BucketName       string       `json:"bucketName"`
 	BucketRegion     string       `json:"bucketRegion"`
-	BucketPathPrefix string       `json:"bucketPathPrefix"`
+	BucketPathPrefix *string      `json:"bucketPathPrefix"`
 	SourceTopicArn   string       `json:"sourceTopicArn"`
 	AccessConfig     AccessConfig `json:"accessConfig"`
 }
